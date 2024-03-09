@@ -19,6 +19,8 @@ const login = () => {
     password: "",
   });
 
+  
+
   const handleLogin = () => {
     setLoading(true);
     postFetch("/authentication/login", {
@@ -28,7 +30,11 @@ const login = () => {
       .then((response: any) => {
         setLoading(false);
         if (response.data.role) {
-          localStorage.setItem("kol_user", JSON.stringify(response.data));
+          if (typeof window !== 'undefined') {
+            // Access localStorage safely
+            localStorage.setItem("kol_user", JSON.stringify(response.data));
+
+          }
         } else {
 
           toast("Invalid User", {
@@ -64,7 +70,7 @@ const login = () => {
     <>
       <ToastContainer />
       <div className="w-full h-screen flex items-center justify-center">
-        <div className="px-12 md:px-0 w-full md:w-5/12 lg:w-3/12 ">
+        <div className="px-12 md:px-0 w-full md:w-5/12 lg:w-4/12  ">
           <h1 className="md:text-3xl text-2xl font-bold">
             Welcome to K.O.L.C.I.C.S
           </h1>

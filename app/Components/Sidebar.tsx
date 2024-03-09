@@ -4,11 +4,23 @@ import { MdGroup } from "react-icons/md";
 import { RiAdminFill } from "react-icons/ri";
 import { postFetch } from "../lib/apiCall";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 const Sidebar = ({ menu, setMenu }: any) => {
   const router = useRouter();
+  const [userData, setUserData] = useState<any>();
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Access localStorage safely
+      const storedData:any = localStorage.getItem('kol_user');
+      const stored=JSON.parse(storedData) || {}
+      if (stored) {
+        setUserData(stored);
+      }
+    }
+  }, []); 
 
-  const userData: any = localStorage.getItem("kol_user");
-  const user = JSON.parse(userData) || {};
+
+  
 
   const handleLogout = () => {
     localStorage.removeItem("kol_user");
@@ -23,9 +35,9 @@ const Sidebar = ({ menu, setMenu }: any) => {
             <h2>Cooperative Society</h2>
           </div>
           <div className="flex flex-col gap-3 text-white mt-12 px-6">
-            {user?.role === "member" ? (
+            {userData?.role === "member" ? (
               <Link
-                href={`/dashboard/${user?._id}`}
+                href={`/dashboard/${userData?._id}`}
                 className="flex items-center gap-3"
               >
                 <MdGroup />
@@ -66,9 +78,9 @@ const Sidebar = ({ menu, setMenu }: any) => {
 
         <div className="flex items-center gap-3">
           <div className="flex flex-col gap-1 text-white">
-            {user?.role === "member" ? (
+            {userData?.role === "member" ? (
               <Link
-                href={`/dashboard/${user?._id}`}
+                href={`/dashboard/${userData?._id}`}
                 className="flex items-center gap-3"
               >
                 <MdGroup />

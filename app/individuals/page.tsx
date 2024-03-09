@@ -8,8 +8,18 @@ import { useRouter } from "next/navigation";
 const page = () => {
   const router = useRouter();
 
-  const userData: any = localStorage.getItem("kol_user");
-  const user = JSON.parse(userData) || {};
+  const [userData, setUserData] = useState<any>();
+  useEffect(() => {
+    // Check if localStorage is available
+    if (typeof window !== 'undefined') {
+      // Access localStorage safely
+      const storedData:any = localStorage.getItem('kol_user');
+      const stored=JSON.parse(storedData) || {}
+      if (stored) {
+        setUserData(stored);
+      }
+    }
+  }, []); 
 
   const [allUsers, setAllUsers] = useState<any>([]);
   let [isOpen, setIsOpen] = useState(false);
@@ -24,7 +34,7 @@ const page = () => {
     });
   }, []);
   useEffect(() => {
-    if (user?.role === "superuser") {
+    if (userData?.role === "superuser") {
       router.push(`/individuals`);
     } else {
       router.push(`/login`);

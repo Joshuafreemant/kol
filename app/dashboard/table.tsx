@@ -1,4 +1,5 @@
-import React from "react";
+"use client"
+import React, { useEffect, useState } from "react";
 import { CiSquarePlus } from "react-icons/ci";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { FaChevronDown } from "react-icons/fa6";
@@ -35,8 +36,9 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
   paused: "danger",
   vacation: "warning",
 };
-const userData: any = localStorage.getItem("kol_user");
-const user = JSON.parse(userData) || {};
+
+
+
 const INITIAL_VISIBLE_COLUMNS = [
   "date",
   "particulars",
@@ -45,7 +47,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "loans",
   "building_fund",
   "investment_fund",
-  user?.role === "member" ? "" : "actions",
+  "actions",
 ];
 
 type User = (typeof records)[0];
@@ -55,6 +57,20 @@ export default function IndividualPaymentTable({
   isOpen,
   setIsOpen,
 }: any) {
+
+  const [userData, setUserData] = useState<any>();
+useEffect(() => {
+  // Check if localStorage is available
+  if (typeof window !== 'undefined') {
+    // Access localStorage safely
+    const storedData:any = localStorage.getItem('kol_user');
+    const stored=JSON.parse(storedData) || {}
+    if (stored) {
+      setUserData(stored);
+    }
+  }
+}, []); 
+
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set([])
@@ -88,7 +104,7 @@ export default function IndividualPaymentTable({
 
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter((user) => {
-        console.log(user);
+        
         return user.date.toLowerCase().includes(filterValue.toLowerCase());
       });
     }
@@ -311,6 +327,8 @@ export default function IndividualPaymentTable({
         );
       case "actions":
         return (
+
+          userData?.role==="superuser"?
           <div className="relative flex justify-center items-center gap-2">
             <Dropdown>
               <DropdownTrigger>
@@ -330,7 +348,7 @@ export default function IndividualPaymentTable({
                 {/* <DropdownItem>Delete Payment Record</DropdownItem> */}
               </DropdownMenu>
             </Dropdown>
-          </div>
+          </div>:""
         );
       default:
         return cellValue;

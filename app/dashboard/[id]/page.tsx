@@ -12,8 +12,20 @@ const page = ({ params }: any) => {
   let [isOpen, setIsOpen] = useState<any>(false);
   const router = useRouter();
 
-  const userData: any = localStorage.getItem("kol_user");
-  const user = JSON.parse(userData) || {};
+
+
+  const [userData, setUserData] = useState<any>();
+  useEffect(() => {
+    // Check if localStorage is available
+    if (typeof window !== 'undefined') {
+      // Access localStorage safely
+      const storedData:any = localStorage.getItem('kol_user');
+      const stored=JSON.parse(storedData) || {}
+      if (stored) {
+        setUserData(stored);
+      }
+    }
+  }, []); 
 
   useEffect(() => {
     getFetch(`/individuals/${params?.id}`).then((response: any) => {
@@ -23,7 +35,7 @@ const page = ({ params }: any) => {
   }, []);
 
   useEffect(() => {
-    if (user?.role === "member" || user?.role === "superuser") {
+    if (userData?.role === "member" || userData?.role === "superuser") {
       router.push(`/dashboard/${params?.id}`);
     } else {
       router.push(`/login`);
