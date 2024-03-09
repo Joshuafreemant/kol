@@ -160,7 +160,8 @@ export default function IndividualTables({ allUsers, isOpen, setIsOpen }: any) {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                {user?.status === "unapproved" ? (
+                
+              
                   <DropdownItem
                     onClick={() => {
                       handleApprove(user);
@@ -168,9 +169,7 @@ export default function IndividualTables({ allUsers, isOpen, setIsOpen }: any) {
                   >
                     Approve
                   </DropdownItem>
-                ) : (
-                  ""
-                )}
+                
 
                 <DropdownItem>
                   <Link href={`dashboard/${user?._id}`}>View Dashboard</Link>
