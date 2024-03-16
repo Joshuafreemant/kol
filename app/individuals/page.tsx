@@ -4,55 +4,60 @@ import { getFetch } from "../lib/apiCall";
 import IndividualTables from "./table";
 import { NextUIProvider } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/redux/hooks";
+import { useDispatch } from "react-redux";
+import { setAllUser } from "@/redux/slices/userSlice";
+import Image from "next/image";
 
 const page = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
 
-  const [userData, setUserData] = useState<any>();
-  useEffect(() => {
-    // Check if localStorage is available
-    if (typeof window !== 'undefined') {
-      // Access localStorage safely
-      const storedData:any = localStorage.getItem('kol_user');
-      const stored=JSON.parse(storedData) || {}
-      if (stored) {
-        setUserData(stored);
-      }
-    }
-  }, []); 
+  const user: any = useAppSelector((state) => state.user);
+  const [userss, setUsersss] = useState(user?.allUser);
 
-  const [allUsers, setAllUsers] = useState<any>([]);
   let [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    getFetch(`/individuals/get-all-individuals`).then((response: any) => {
-      setAllUsers(
-        response?.data?.users.filter((data: any) => {
-          return data.role !== "superuser";
-        })
-      );
-    });
-  }, []);
-  useEffect(() => {
-    if (userData?.role === "superuser") {
+    if (user?.user?.role === "superuser") {
       router.push(`/individuals`);
     } else {
       router.push(`/login`);
     }
   }, []);
 
+  useEffect(() => {
+    getFetch(`/individuals/get-all-individuals`).then((response: any) => {
+      dispatch(
+        setAllUser(
+          response?.data?.users.filter((data: any) => {
+            return data.role !== "superuser";
+          })
+        )
+      );
+      setUsersss(
+        response?.data?.users.filter((data: any) => {
+          return data.role !== "superuser";
+        })
+      );
+    });
+  }, [dispatch]);
+
   return (
     <div className="lg:w-full w-full p-3 md:p-6 mt-24 lg:mt-0 b">
       <NextUIProvider>
-        {allUsers?.length ? (
+        {/* {!userss?.length ? (
+          <div className=" w-full h-[90vh] flex items-center justify-center">
+            <Image src={"/spinner.gif" } alt="loading"  width={80} height={80}/>
+            
+          </div>
+        ) : ( */}
           <IndividualTables
-            allUsers={allUsers}
+            allUsers={userss}
             isOpen={isOpen}
             setIsOpen={setIsOpen}
           />
-        ) : (
-          "Loading..."
-        )}
+        {/* )} */}
       </NextUIProvider>
     </div>
   );

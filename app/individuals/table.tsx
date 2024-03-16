@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CiSquarePlus } from "react-icons/ci";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { FaChevronDown } from "react-icons/fa6";
@@ -16,8 +16,6 @@ import {
   Dropdown,
   DropdownMenu,
   DropdownItem,
-  Chip,
-  User,
   Pagination,
   Selection,
   ChipProps,
@@ -29,6 +27,9 @@ import { capitalize } from "./utils";
 import AddPaymentModal from "../Components/AddPaymentModal";
 import Link from "next/link";
 import { postFetch } from "../lib/apiCall";
+import { useDispatch } from "react-redux";
+import { setAllUser } from "@/redux/slices/userSlice";
+import { useAppSelector } from "@/redux/hooks";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
   active: "success",
@@ -49,7 +50,10 @@ const INITIAL_VISIBLE_COLUMNS = [
 
 type User = (typeof users)[0];
 
-export default function IndividualTables({ allUsers, isOpen, setIsOpen }: any) {
+export default function IndividualTables({allUsers, isOpen, setIsOpen }: any) {
+  
+console.log("allUsers",allUsers)
+
   const [filterValue, setFilterValue] = React.useState("");
   const [singleUser, setSingleUser] = React.useState<any>();
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
@@ -160,16 +164,25 @@ export default function IndividualTables({ allUsers, isOpen, setIsOpen }: any) {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                
-              
+                {user?.status !== "approved" ? (
                   <DropdownItem
                     onClick={() => {
                       handleApprove(user);
+                      console.log(user);
                     }}
                   >
                     Approve
                   </DropdownItem>
-                
+                ) : (
+                  <DropdownItem
+                    onClick={() => {
+                      handleUnApprove(user);
+                      console.log(user);
+                    }}
+                  >
+                    UnApprove
+                  </DropdownItem>
+                )}
 
                 <DropdownItem>
                   <Link href={`dashboard/${user?._id}`}>View Dashboard</Link>
@@ -228,6 +241,7 @@ export default function IndividualTables({ allUsers, isOpen, setIsOpen }: any) {
   const handleAddRecord = (data: any) => {
     setSingleUser(data);
   };
+  const dispatch = useDispatch();
 
   const handleApprove = (data: any) => {
     // setLoading(true);
@@ -237,6 +251,28 @@ export default function IndividualTables({ allUsers, isOpen, setIsOpen }: any) {
     })
       .then((response: any) => {
         // setLoading(false);
+        console.log(response?.data);
+        dispatch(setAllUser(response.data.data));
+      window.location.reload()
+
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleUnApprove = (data: any) => {
+    // setLoading(true);
+    postFetch("/authentication/change-status", {
+      id: data._id,
+      status: "unapproved",
+    })
+      .then((response: any) => {
+        // setLoading(false);
+        console.log(response?.data);
+        dispatch(setAllUser(response.data.data));
+      window.location.reload()
+
       })
       .catch((error) => {
         console.log(error);

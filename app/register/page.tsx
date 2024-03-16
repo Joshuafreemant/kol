@@ -39,7 +39,7 @@ const register = () => {
       <ToastContainer />
 
     <div className="w-full h-screen flex items-center justify-center">
-      <div className="px-12 md:px-0 w-full md:w-5/12 lg:w-3/12">
+      <div className="px-12 md:px-0 w-full md:w-5/12  lg:w-4/12 lg:-ml-[240px]">
       <h1 className="md:text-3xl text-2xl font-bold">Welcome to K.O.L.C.I.C.S</h1>
         <h1 className="text-xl font-semibold mt-4">Create Account</h1>
         <form className="border border-gray-300 p-6 rounded mt-4 w-full">

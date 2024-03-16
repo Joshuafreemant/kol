@@ -22,8 +22,9 @@ export async function POST(req: Request, res: Response) {
     const { password, ...updatedInfo } = updatedUser;
     sendApprovedEmail(updatedUser._doc.email, updatedUser._doc.firstname);
 
+    const allUsers: any = await UserModel.find();
     return Response.json({
-      data: updatedInfo._doc,
+      data: allUsers,
       message: "User status changed Successfully",
     });
   } catch (error) {

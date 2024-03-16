@@ -1,5 +1,4 @@
-"use client"
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { CiSquarePlus } from "react-icons/ci";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { FaChevronDown } from "react-icons/fa6";
@@ -30,6 +29,8 @@ import { capitalize } from "./utils";
 import AddPaymentModal from "../Components/AddPaymentModal";
 import EditPaymentModal from "../Components/EditPaymentModal";
 import DashboardCard from "../Components/DashboardCard";
+import DeletePaymentModal from "../Components/DeletePaymentModal";
+import { useAppSelector } from "@/redux/hooks";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
   active: "success",
@@ -37,39 +38,27 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
   vacation: "warning",
 };
 
-
-
-const INITIAL_VISIBLE_COLUMNS = [
-  "date",
-  "particulars",
-  "shares",
-  "savings",
-  "loans",
-  "building_fund",
-  "investment_fund",
-  "actions",
-];
-
 type User = (typeof records)[0];
 
 export default function IndividualPaymentTable({
   record,
   isOpen,
   setIsOpen,
+  setIsDelOpen,
+  isDelOpen,
 }: any) {
-
-  const [userData, setUserData] = useState<any>();
-useEffect(() => {
-  // Check if localStorage is available
-  if (typeof window !== 'undefined') {
-    // Access localStorage safely
-    const storedData:any = localStorage.getItem('kol_user');
-    const stored=JSON.parse(storedData) || {}
-    if (stored) {
-      setUserData(stored);
-    }
-  }
-}, []); 
+  const userData: any = useAppSelector((state) => state.user);
+  const userDetail = userData?.user;
+  const INITIAL_VISIBLE_COLUMNS = [
+    "date",
+    "particulars",
+    "shares",
+    "savings",
+    "loans",
+    "building_fund",
+    "investment_fund",
+    userDetail?.role === "member" ? "" : "actions",
+  ];
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
@@ -86,7 +75,6 @@ useEffect(() => {
   });
 
   const [page, setPage] = React.useState(1);
-  const [userId, setUserId] = React.useState("");
   const [paymentData, setPaymentData] = React.useState<any>();
 
   const hasSearchFilter = Boolean(filterValue);
@@ -104,7 +92,7 @@ useEffect(() => {
 
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter((user) => {
-        
+        console.log(user);
         return user.date.toLowerCase().includes(filterValue.toLowerCase());
       });
     }
@@ -326,10 +314,7 @@ useEffect(() => {
           </div>
         );
       case "actions":
-        return (
-
-          userData?.role==="superuser"?
-          <div className="relative flex justify-center items-center gap-2">
+        return (<div className="relative flex justify-center items-center gap-2">
             <Dropdown>
               <DropdownTrigger>
                 <Button isIconOnly size="sm" variant="light">
@@ -345,11 +330,18 @@ useEffect(() => {
                 >
                   Edit Payment Record
                 </DropdownItem>
-                {/* <DropdownItem>Delete Payment Record</DropdownItem> */}
+                <DropdownItem
+                  onClick={(e: any) => {
+                    setIsDelOpen(true);
+                    setPaymentData(user);
+                  }}
+                >
+                  Delete Payment Record
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
-          </div>:""
-        );
+          </div>)
+        
       default:
         return cellValue;
     }
@@ -478,12 +470,11 @@ useEffect(() => {
   return (
     <>
       <div className="mt-24 md:mt-0 lg:justify-between mb-4  w-full flex md:gap-6 gap-3 flex-wrap lg:flex-nowrap">
-        
-        <DashboardCard data={record} label="shares"/>
-        <DashboardCard data={record} label="savings"/>
-        <DashboardCard data={record} label="loans"/>
-        <DashboardCard data={record} label="building_fund"/>
-        <DashboardCard data={record} label="investment_fund"/>
+        <DashboardCard data={record} label="shares" />
+        <DashboardCard data={record} label="savings" />
+        <DashboardCard data={record} label="loans" />
+        <DashboardCard data={record} label="building_fund" />
+        <DashboardCard data={record} label="investment_fund" />
       </div>
       <Table
         aria-label="KOL Cooperative society"
@@ -525,6 +516,12 @@ useEffect(() => {
       <EditPaymentModal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
+        paymentData={paymentData}
+      />
+
+      <DeletePaymentModal
+        isDelOpen={isDelOpen}
+        setIsDelOpen={setIsDelOpen}
         paymentData={paymentData}
       />
     </>

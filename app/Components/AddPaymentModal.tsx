@@ -60,7 +60,7 @@ export default function AddPaymentModal({
     setLoading(true);
     postFetch("/individuals/add-payment-record", {
       ...record,
-      individual,
+      individual
     })
       .then((response: any) => {
         setIsOpen(false);
@@ -70,7 +70,7 @@ export default function AddPaymentModal({
         });
         // router.push(`/individuals`);
       router.push(`/dashboard/${response?.data?.individual}`);
-      window.location.reload()
+      // window.location.reload()
 
 
       })

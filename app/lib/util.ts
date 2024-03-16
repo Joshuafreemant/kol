@@ -35,6 +35,23 @@ const sendWelcomeEmail = (email: string, name: string) => {
   });
 };
 
+const sendResetEmail = (email:string, resetToken:string) => {
+  const mailOptions = {
+    from: "tolexjoshua@gmail.com",
+    to: email,
+    subject: "Password Reset",
+    text: `Click the following link to reset your password: http://localhost:3000/reset/${resetToken}`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error("Error sending reset email:", error);
+    } else {
+      console.log("Reset email sent:", info.response);
+    }
+  });
+};
+
 const sendApprovedEmail = (email: string, name: string) => {
   const welcomeMessage = `
   Dear ${name},
@@ -91,4 +108,4 @@ const sendNotificationEmail = (email: string, name: string, text:any) => {
   });
 };
 
-export { sendWelcomeEmail,sendApprovedEmail,sendNotificationEmail };
+export { sendWelcomeEmail,sendApprovedEmail,sendNotificationEmail,sendResetEmail };

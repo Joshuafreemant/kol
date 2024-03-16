@@ -46,8 +46,8 @@ const paymentRecordSchema = new Mongoose.Schema({
   },
   certified_by: {
     type: String,
-  },
-});
+  }
+},{ timestamps: true });
 interface IPaymentRecord {
     individual: string;
     date: string;
@@ -59,6 +59,8 @@ interface IPaymentRecord {
     investment_fund: any;
     user: string;
     certified_by: string;
+    createdAt?: Date; 
+    updatedAt?: Date;
 }
 
 interface IPaymentRecordDocument extends IPaymentRecord, Document {}

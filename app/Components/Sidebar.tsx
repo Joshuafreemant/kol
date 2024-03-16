@@ -4,26 +4,18 @@ import { MdGroup } from "react-icons/md";
 import { RiAdminFill } from "react-icons/ri";
 import { postFetch } from "../lib/apiCall";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useAppSelector } from "@/redux/hooks";
+
 const Sidebar = ({ menu, setMenu }: any) => {
   const router = useRouter();
-  const [userData, setUserData] = useState<any>();
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Access localStorage safely
-      const storedData:any = localStorage.getItem('kol_user');
-      const stored=JSON.parse(storedData) || {}
-      if (stored) {
-        setUserData(stored);
-      }
-    }
-  }, []); 
+  const user:any = useAppSelector((state) => state.user)
+  const userData=user?.user
 
 
   
 
   const handleLogout = () => {
-    localStorage.removeItem("kol_user");
+    // window.localStorage.removeItem("kol_user");
     router.push(`/login`);
   };
   return (
@@ -105,7 +97,7 @@ const Sidebar = ({ menu, setMenu }: any) => {
 
           <div
             onClick={() => handleLogout()}
-            className="flex items-center gap-1 text-white "
+            className="flex items-center gap-1 text-white cursor-pointer "
           >
             <RiAdminFill />
             <label className="flex items-center ">Logout</label>

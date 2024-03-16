@@ -6,9 +6,7 @@ export async function GET(req: Request, res: Response) {
     await dbConnect();
     const segments = req.url.split("/");
     const id = segments[segments.length - 1];
-    const userRecord = await PaymentRecordModel.find({ individual: id }).sort({
-      createdAt: -1,
-    });
+    const userRecord = await UserModel.find({ _id: id })
     return Response.json({ data: userRecord }, { status: 200 });
   } catch (err) {
     return Response.json({ err }, { status: 500 });

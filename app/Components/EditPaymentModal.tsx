@@ -2,18 +2,20 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState, useEffect } from "react";
 import CurrencyInput from "react-currency-input-field";
-import { postFetch } from "../lib/apiCall";
+import { getFetch, postFetch } from "../lib/apiCall";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 export default function EditPaymentModal({
   isOpen,
   setIsOpen,
   paymentData,
+  
 }: any) {
   function closeModal() {
     setIsOpen(false);
   }
   const [loading, setLoading] = useState(false);
+  const [userDetail, setUserDetail] = useState<any>({});
 
   const [record, setRecord] = useState<any>({
     // individual: paymentData.individual,
@@ -53,8 +55,18 @@ export default function EditPaymentModal({
     setRecord(paymentData);
   }, [paymentData]);
 
+
+  const singleUserId = paymentData?.individual;
+  console.log("first",paymentData?.individual)
+  useEffect(() => {
+    getFetch(`/individuals/single-individual/${singleUserId}`).then((response: any) => {
+      // setAllRecords(response?.data?.data);
+      console.log("response?.data?.data", response?.data);
+      setUserDetail(response?.data?.data[0])
+    });
+  }, [paymentData?.individual]);
+
   function handleUpdatePayment() {
-    const singleUserId = paymentData?.individual;
     setLoading(true);
     postFetch("/individuals/update-payment-record", {
       ...record,
@@ -102,7 +114,7 @@ export default function EditPaymentModal({
               >
                 <Dialog.Panel className="lg:w-5/12 md:w-6/12 w-full border overflow-hidden border-[#ccc] transform rounded-2xl bg-white  text-left align-middle shadow-xl transition-all">
                   <h4 className="bg-purple-800 text-center font-bold p-2 text-white">
-                    {paymentData?.individual}
+                    {userDetail?.firstname+" "+userDetail?.lastname}
                   </h4>
 
                   <div className="p-3">

@@ -22,10 +22,13 @@ export async function POST(req: Request, res: Response) {
       shares: data.shares,
       savings: data.savings,
       loans: data.loans,
+      At: new Date(),
       building_fund: data.building_fund,
       investment_fund: data.investment_fund,
       user: "Tolulope",
     });
+
+    console.log("payment",payment)
     const user:any = await UserModel.findOne({ _id: data.individual });
 
      sendNotificationEmail(user.email, user.firstname, "A New Payment Record has just been added to");
