@@ -17,9 +17,9 @@ const page = () => {
 
   return (
     <div className="w-10/12 p-6">
-      <NextUIProvider>
+      {/* <NextUIProvider>
         <IndividualPaymentTable isOpen={isOpen} setIsOpen={setIsOpen} />
-      </NextUIProvider>
+      </NextUIProvider> */}
     </div>
   );
 };
