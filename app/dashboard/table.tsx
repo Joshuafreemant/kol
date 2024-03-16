@@ -323,7 +323,7 @@ export default function IndividualPaymentTable({
               </DropdownTrigger>
               <DropdownMenu>
                 <DropdownItem
-                  onClick={(e: any) => {
+                  onClick={() => {
                     setIsOpen(true);
                     setPaymentData(user);
                   }}
@@ -331,7 +331,7 @@ export default function IndividualPaymentTable({
                   Edit Payment Record
                 </DropdownItem>
                 <DropdownItem
-                  onClick={(e: any) => {
+                  onClick={() => {
                     setIsDelOpen(true);
                     setPaymentData(user);
                   }}
