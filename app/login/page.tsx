@@ -28,7 +28,7 @@ const login = () => {
     setLoading(true);
     postFetch("/authentication/login", {
       email: user.email.toLowerCase(),
-      password: user.password,
+      password: user.password.toLowerCase(),
     })
       .then((response: any) => {
         setLoading(false);

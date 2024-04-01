@@ -27,7 +27,7 @@ const register = () => {
       firstname: user.firstname,
       lastname: user.lastname,
       email: user.email.toLowerCase(),
-      password: user.password,
+      password: user.password.toLowerCase(),
       phone_number: user.phone_number,
     })
       .then((response: any) => {
