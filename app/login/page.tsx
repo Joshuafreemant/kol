@@ -52,14 +52,13 @@ const login = () => {
 
         // Redirect based on user role
         if (response?.data?.role === "superuser") {
-          dispatch(setUserss(response.data));
 
           router.push(`/individuals`);
         } else {
-          dispatch(setUserss(response.data));
 
           router.push(`/dashboard/${response?.data?._id}`);
         }
+        dispatch(setUserss(response.data));
 
         // Display success message
         toast("Login Successful", {
