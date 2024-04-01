@@ -14,7 +14,7 @@ const page = () => {
   const dispatch = useDispatch();
 
   const user: any = useAppSelector((state) => state.user);
-  const [userss, setUsersss] = useState(user?.allUser);
+  const [userss, setUsersss] = useState([]);
 
   let [isOpen, setIsOpen] = useState(false);
 
@@ -41,23 +41,23 @@ const page = () => {
         })
       );
     });
-  }, [dispatch]);
+  }, []);
 
   return (
     <div className="lg:w-full w-full p-3 md:p-6 mt-24 lg:mt-0 b">
       <NextUIProvider>
-        {/* {!userss?.length ? (
+        {!userss?.length ? (
           <div className=" w-full h-[90vh] flex items-center justify-center">
             <Image src={"/spinner.gif" } alt="loading"  width={80} height={80}/>
             
           </div>
-        ) : ( */}
+        ) : (
           <IndividualTables
             allUsers={userss}
             isOpen={isOpen}
             setIsOpen={setIsOpen}
           />
-        {/* )} */}
+        )} 
       </NextUIProvider>
     </div>
   );

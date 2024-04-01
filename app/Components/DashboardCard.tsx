@@ -1,12 +1,12 @@
 import React from "react";
 
 const DashboardCard = ({ data, label }: any) => {
-  const sharesBalance = Number(data[0]?.shares.balance) || 0;
-  const savingsBalance = Number(data[0]?.savings.balance) || 0;
-  const loansBalance = Number(data[0]?.loans.balance) || 0;
-  const loansInterest = Number(data[0]?.loans.interest) || 0;
-  const buildingBalance = Number(data[0]?.building_fund.balance) || 0;
-  const investmentBalance = Number(data[0]?.investment_fund.balance) || 0;
+  const sharesBalance = Number(data[0]?.shares?.balance) || 0;
+  const savingsBalance = Number(data[0]?.savings?.balance) || 0;
+  const loansBalance = Number(data[0]?.loans?.balance) || 0;
+  const loansInterest = Number(data[0]?.loans?.interest) || 0;
+  const buildingBalance = Number(data[0]?.building_fund?.balance) || 0;
+  const investmentBalance = Number(data[0]?.investment_fund?.balance) || 0;
 
   // let totalSharesDebit = 0;
   // let totalSharesCredit = 0;
@@ -50,7 +50,7 @@ const DashboardCard = ({ data, label }: any) => {
   return (
     <>
       {label === "shares" && (
-        <div className="w-[30%] bg-purple-300  rounded-md p-3 md:p-4">
+        <div className="lg:w-[30%] w-[47%] bg-purple-300  rounded-md p-3 md:p-4">
           <h1 className="md:text-2xl font-bold text-xl">Shares</h1>
           <div className="flex md:items-center justify-between lg:flex-row flex-col">
             <div className="flex flex-col mt-2">
@@ -80,7 +80,7 @@ const DashboardCard = ({ data, label }: any) => {
         </div>
       )}
       {label === "savings" && (
-        <div className="w-[30%] bg-blue-300  rounded-md p-3 md:p-4">
+        <div className="lg:w-[30%] w-[47%] bg-blue-300  rounded-md p-3 md:p-4">
           <h1 className="md:text-2xl font-bold text-xl">Savings</h1>
           <div className="flex md:items-center justify-between lg:flex-row flex-col">
             <div className="flex flex-col mt-2">
@@ -109,7 +109,7 @@ const DashboardCard = ({ data, label }: any) => {
         </div>
       )}
       {label === "loans" && (
-        <div className="w-[30%] bg-red-300  rounded-md p-3 md:p-4">
+        <div className="lg:w-[30%] w-[47%] bg-red-300  rounded-md p-3 md:p-4">
           <h1 className="md:text-2xl font-bold text-xl">Loans</h1>
           <div className="flex md:items-center justify-between lg:flex-row flex-col">
             <div className="flex flex-col mt-2">
@@ -162,7 +162,7 @@ const DashboardCard = ({ data, label }: any) => {
       )}
 
       {label === "building_fund" && (
-        <div className="w-[30%] bg-black  rounded-md p-3 md:p-4">
+        <div className="lg:w-[30%] w-[47%] bg-black  rounded-md p-3 md:p-4">
           <h1 className="md:text-2xl font-bold text-xl text-white">Building</h1>
           <div className="flex md:items-center justify-between lg:flex-row flex-col">
             <div className="flex flex-col mt-2">
@@ -192,7 +192,7 @@ const DashboardCard = ({ data, label }: any) => {
       )}
 
       {label === "investment_fund" && (
-        <div className="w-[65%] md:w-[30%] bg-green-300  rounded-md p-3 md:p-4">
+        <div className="w-[97%] lg:w-[30%]  bg-green-300  rounded-md p-3 md:p-4">
           <h1 className="md:text-2xl font-bold text-xl">Investment</h1>
           <div className="flex md:items-center justify-between lg:flex-row flex-col">
             <div className="flex flex-col mt-2">
