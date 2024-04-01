@@ -28,6 +28,17 @@ const forgot = () => {
       .then((response: any) => {
         setLoading(false);
        console.log(response)
+      
+       if (response?.response?.data?.error) {
+        toast(response.response.data.error, {
+          theme: "dark",
+        });
+        return; // Exit the function early if there's an error
+      }
+
+       toast(response?.data?.message, {
+        theme: "dark",
+      });
       })
       .catch((error:any) => {
         console.log(error);
@@ -40,7 +51,7 @@ const forgot = () => {
     <>
       <ToastContainer />
       <div className="w-full h-screen flex items-center justify-center">
-        <div className="px-12 md:px-0 w-full md:w-5/12 lg:w-4/12 lg:-ml-[240px] ">
+        <div className="px-6 md:px-0 w-full md:w-5/12 lg:w-4/12 lg:-ml-[240px] ">
           <h1 className="md:text-3xl text-2xl font-bold">
            Forgot Password
           </h1>

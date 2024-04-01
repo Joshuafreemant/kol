@@ -3,8 +3,14 @@ import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { useState } from "react";
 import { postFetch } from "../lib/apiCall";
 import { User } from "../register/types";
+import { useRouter } from "next/navigation";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const register = () => {
+  const router = useRouter();
+
   const [actionType, setActionType] = useState("password");
   const [loading, setLoading] = useState(false);
 
@@ -13,9 +19,7 @@ const register = () => {
     lastname: "",
     email: "",
     phone_number: "",
-    password: "",
-    role: "superuser",
-    status: "approved",
+    password: ""
   });
 
   const handleRegister = () => {
@@ -26,10 +30,22 @@ const register = () => {
       email: user.email,
       password: user.password,
       phone_number: user.phone_number,
+      role: "superuser",
+      status: "approved",
     })
       .then((response: any) => {
         setLoading(false);
-        console.log(response.data);
+        if (response?.response?.data?.error) {
+          toast(response?.response?.data?.error, {
+            theme: "dark",
+          });
+        } else {
+          toast(response?.data?.message, {
+            theme: "dark",
+          });
+
+          router.push(`/login`);
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -37,7 +53,7 @@ const register = () => {
   };
   return (
     <div className="w-full h-screen flex items-center justify-center">
-      <div className="w-full md:w-5/12 lg:w-3/12">
+      <div className="px-6 md:px-0 w-full md:w-5/12 lg:w-4/12 lg:-ml-[240px]">
         <h1 className="text-xl font-semibold">Create Account</h1>
         <form className="border border-gray-300 p-6 rounded mt-4 w-full">
           <div className="flex items-center gap-2  w-full">
@@ -106,23 +122,7 @@ const register = () => {
             />
           </div>
 
-          <div className="flex flex-col gap-2 mt-3">
-            <label htmlFor="" className="text-sm">
-              Phone Number
-            </label>
-            <input
-              type="text"
-              onChange={(e:any) =>
-                setUser({
-                  ...user,
-                  phone_number: e.target.value,
-                })
-              }
-              placeholder="Phone Number"
-              className="text-sm p-2 rounded outline-none border border-gray-300"
-            />
-          </div>
-
+        
           <div className="flex flex-col gap-2 mt-3">
             <label htmlFor="" className="text-sm">
               Password

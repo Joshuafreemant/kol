@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useSelector, useDispatch } from '../../redux/store';
+import { useSelector, useDispatch } from "../../redux/store";
 import { setUserss } from "@/redux/slices/userSlice";
 
 const login = () => {
@@ -23,7 +23,6 @@ const login = () => {
   });
 
   const dispatch = useDispatch();
-  
 
   const handleLogin = () => {
     setLoading(true);
@@ -33,38 +32,46 @@ const login = () => {
     })
       .then((response: any) => {
         setLoading(false);
-        // console.log(response.response.data.message);
+        console.log(response);
 
-        // console.log("response.data.role",response)
-        if (response.data.role) {
-          dispatch(setUserss(response.data));
-          if (response?.data?.status === "unapproved") {
-            toast("Please wait for approval", {
-              theme: "dark",
-            });
-          } else {
-            if (response?.data?.role === "superuser") {
-              router.push(`/individuals`); 
-              toast("Login Successfull", {
-                theme: "dark",
-              });
-            } else {
-              router.push(`/dashboard/${response?.data?._id}`);
-              toast("Login Successfull", {
-                theme: "dark",
-              });
-            }
-          }
-        } else {
-          toast("Invalid Email or Password", {
+        // Check for errors in the response
+        if (response?.response?.data?.error) {
+          toast(response.response.data.error, {
             theme: "dark",
           });
+          return; // Exit the function early if there's an error
         }
-       
+
+        // Check user status
+        if (response?.data?.status === "unapproved") {
+          toast("Please wait for approval", {
+            theme: "dark",
+          });
+          return; // Exit the function early if the user is unapproved
+        }
+
+        // Redirect based on user role
+        if (response?.data?.role === "superuser") {
+          dispatch(setUserss(response.data));
+
+          router.push(`/individuals`);
+        } else {
+          dispatch(setUserss(response.data));
+
+          router.push(`/dashboard/${response?.data?._id}`);
+        }
+
+        // Display success message
+        toast("Login Successful", {
+          theme: "dark",
+        });
       })
       .catch((error: any) => {
-        console.log(error);
-        toast(error?.response?.data?.message, {
+        setLoading(false);
+        console.error("An error occurred:", error);
+
+        // Handle unexpected errors
+        toast("An error occurred. Please try again later.", {
           theme: "dark",
         });
       });
@@ -73,7 +80,7 @@ const login = () => {
     <>
       <ToastContainer />
       <div className="w-full h-screen flex items-center justify-center">
-        <div className="px-12 md:px-0 w-full md:w-5/12 lg:w-4/12 lg:-ml-[240px] ">
+        <div className="px-6 md:px-0 w-full md:w-5/12 lg:w-4/12 lg:-ml-[240px] ">
           <h1 className="md:text-3xl text-2xl font-bold">
             Welcome to K.O.L.C.I.C.S
           </h1>

@@ -50,9 +50,8 @@ const INITIAL_VISIBLE_COLUMNS = [
 
 type User = (typeof users)[0];
 
-export default function IndividualTables({allUsers, isOpen, setIsOpen }: any) {
-  
-console.log("allUsers",allUsers)
+export default function IndividualTables({ allUsers, isOpen, setIsOpen }: any) {
+  console.log("allUsers", allUsers);
 
   const [filterValue, setFilterValue] = React.useState("");
   const [singleUser, setSingleUser] = React.useState<any>();
@@ -252,9 +251,14 @@ console.log("allUsers",allUsers)
       .then((response: any) => {
         // setLoading(false);
         console.log(response?.data);
-        dispatch(setAllUser(response.data.data));
-      window.location.reload()
-
+        dispatch(
+          setAllUser(
+            response?.data?.data.filter((data: any) => {
+              return data.role !== "superuser";
+            })
+          )
+        );
+        window.location.reload();
       })
       .catch((error) => {
         console.log(error);
@@ -269,10 +273,15 @@ console.log("allUsers",allUsers)
     })
       .then((response: any) => {
         // setLoading(false);
-        console.log(response?.data);
-        dispatch(setAllUser(response.data.data));
-      window.location.reload()
 
+        dispatch(
+          setAllUser(
+            response?.data?.data.filter((data: any) => {
+              return data.role !== "superuser";
+            })
+          )
+        );
+        window.location.reload();
       })
       .catch((error) => {
         console.log(error);

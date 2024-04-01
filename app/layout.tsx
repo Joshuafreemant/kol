@@ -30,6 +30,7 @@ export default function RootLayout({
           {pathname === "/" ||
           pathname.includes("login") ||
           pathname.includes("register") ||
+          pathname.includes("superuser") ||
           pathname.includes("forgot") ||
           pathname.includes("reset") ? (
             ""

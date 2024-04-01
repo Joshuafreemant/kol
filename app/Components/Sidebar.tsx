@@ -28,13 +28,7 @@ const Sidebar = ({ menu, setMenu }: any) => {
           </div>
           <div className="flex flex-col gap-3 text-white mt-12 px-6">
             {userData?.role === "member" ? (
-              <Link
-                href={`/dashboard/${userData?._id}`}
-                className="flex items-center gap-3"
-              >
-                <MdGroup />
-                My Account
-              </Link>
+             ""
             ) : (
               <Link href="/individuals" className="flex items-center gap-3">
                 <MdGroup />
@@ -71,13 +65,7 @@ const Sidebar = ({ menu, setMenu }: any) => {
         <div className="flex items-center gap-3">
           <div className="flex flex-col gap-1 text-white">
             {userData?.role === "member" ? (
-              <Link
-                href={`/dashboard/${userData?._id}`}
-                className="flex items-center gap-3"
-              >
-                <MdGroup />
-                My Account
-              </Link>
+              ""
             ) : (
               <Link href="/individuals" className="flex items-center gap-3">
                 <MdGroup />

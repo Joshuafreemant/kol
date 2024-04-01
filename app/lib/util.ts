@@ -40,7 +40,7 @@ const sendResetEmail = (email:string, resetToken:string) => {
     from: "tolexjoshua@gmail.com",
     to: email,
     subject: "Password Reset",
-    text: `Click the following link to reset your password: http://localhost:3000/reset/${resetToken}`,
+    text: `Click the following link to reset your password: https://bodijaibkolcics.org.ng/reset/${resetToken}`,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {

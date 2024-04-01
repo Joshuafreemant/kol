@@ -45,6 +45,8 @@ export async function POST(req: Request, res: Response) {
       lastname: data.lastname,
       email: data.email,
       phone_number: data.phone_number,
+      role: data.role,
+      status: data.status,
       password: hash,
     });
     sendWelcomeEmail(data.email, data.firstname);

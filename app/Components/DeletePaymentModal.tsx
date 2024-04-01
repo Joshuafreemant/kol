@@ -29,7 +29,7 @@ export default function DeletePaymentModal({
         toast(response?.data.message, {
           theme: "dark",
         });
-        // window.location.reload();
+        window.location.reload();
       })
       .catch((error) => {
         console.log(error);

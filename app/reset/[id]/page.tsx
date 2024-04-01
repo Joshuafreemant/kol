@@ -42,7 +42,7 @@ const reset = ({ params }:any) => {
     <>
       <ToastContainer />
       <div className="w-full h-screen flex items-center justify-center">
-        <div className="px-12 md:px-0 w-full md:w-5/12 lg:w-4/12 lg:-ml-[240px] ">
+        <div className="px-6 md:px-0 w-full md:w-5/12 lg:w-4/12 lg:-ml-[240px] ">
           <h1 className="md:text-3xl text-2xl font-bold">Reset Password</h1>
           <h1 className="text-md mt-4">Enter New password to reset password</h1>
           <div className="border border-gray-300 p-6 rounded mt-4">

@@ -69,7 +69,7 @@ export default function AddPaymentModal({
           theme: "dark",
         });
         // router.push(`/individuals`);
-      router.push(`/dashboard/${response?.data?.individual}`);
+      router.push(`/dashboard/${individual}`);
       // window.location.reload()
 
 
