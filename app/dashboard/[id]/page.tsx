@@ -1,13 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-// import { getFetch } from "../lib/apiCall";
 import { NextUIProvider } from "@nextui-org/react";
 import { getFetch } from "@/app/lib/apiCall";
 import IndividualPaymentTable from "../table";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/hooks";
 import Image from "next/image";
-// import IndividualPaymentTable from "./table";
 
 const page = ({ params }: any) => {
   const [allRecords, setAllRecords] = useState<any>([]);
@@ -37,11 +35,6 @@ const page = ({ params }: any) => {
   return (
     <div className="w-full p-2 lg:p-6">
       <NextUIProvider>
-        {/* {!allRecords?.length ? (
-          <div className=" w-full h-[90vh] flex items-center justify-center">
-            <Image src={"/spinner.gif"} alt="loading" width={80} height={80} />
-          </div>
-        ) : ( */}
           <IndividualPaymentTable
             record={allRecords}
             isOpen={isOpen}
@@ -49,7 +42,6 @@ const page = ({ params }: any) => {
             setIsDelOpen={setIsDelOpen}
             isDelOpen={isDelOpen}
           />
-        {/* )} */}
       </NextUIProvider>
     </div>
   );
