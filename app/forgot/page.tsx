@@ -98,12 +98,12 @@ const forgot = () => {
               <p className="font-semibold text-xs">
                 Don't have an Account yet?{" "}
               </p>
-              <Link
+              <a
                 href="/register"
                 className="text-purple-900 font-semibold text-xs"
               >
                 Register
-              </Link>
+              </a>
             </div>
 
            

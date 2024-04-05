@@ -30,6 +30,8 @@ const reset = ({ params }:any) => {
         setLoading(false);
         console.log(response);
         router.push(`/login`);
+        router.refresh();
+
       })
       .catch((error: any) => {
         console.log(error);

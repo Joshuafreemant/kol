@@ -45,6 +45,8 @@ const register = () => {
           });
 
           router.push(`/login`);
+          router.refresh();
+
         }
       })
       .catch((error) => {

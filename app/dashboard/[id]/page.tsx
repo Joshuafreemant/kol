@@ -27,8 +27,12 @@ const page = ({ params }: any) => {
   useEffect(() => {
     if (user?.role === "member" || user?.role === "superuser") {
       router.push(`/dashboard/${params?.id}`);
+          router.refresh();
+
     } else {
       router.push(`/login`);
+          router.refresh();
+
     }
   }, []);
 

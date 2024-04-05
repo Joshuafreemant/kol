@@ -42,6 +42,8 @@ const register = () => {
           });
 
           router.push(`/login`);
+          router.refresh();
+
         }
       })
       .catch((error) => {
@@ -167,12 +169,12 @@ const register = () => {
             </div>
             <div className="flex justify-between items-center mt-2">
               <p className="font-semibold text-xs">Already Registered? </p>
-              <Link
+              <a
                 href="/login"
                 className="text-purple-900 font-semibold text-xs"
               >
                 Login
-              </Link>
+              </a>
             </div>
           </form>
         </div>

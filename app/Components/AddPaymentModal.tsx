@@ -70,6 +70,8 @@ export default function AddPaymentModal({
         });
         // router.push(`/individuals`);
       router.push(`/dashboard/${individual}`);
+      router.refresh();
+
       // window.location.reload()
 
 

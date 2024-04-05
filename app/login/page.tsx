@@ -54,9 +54,12 @@ const login = () => {
         if (response?.data?.role === "superuser") {
 
           router.push(`/individuals`);
+          router.refresh();
         } else {
 
           router.push(`/dashboard/${response?.data?._id}`);
+          router.refresh();
+
         }
         dispatch(setUserss(response.data));
 
@@ -148,21 +151,21 @@ const login = () => {
               <p className="font-semibold text-xs">
                 Don't have an Account yet?{" "}
               </p>
-              <Link
+              <a
                 href="/register"
                 className="text-purple-900 font-semibold text-xs"
               >
                 Register
-              </Link>
+              </a>
             </div>
 
             <div className="flex justify-between items-center mt-2">
-              <Link
+              <a
                 href="/forgot"
                 className="text-purple-900 font-semibold text-xs"
               >
                 Forgot Password?
-              </Link>
+              </a>
             </div>
           </div>
         </div>

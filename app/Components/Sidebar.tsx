@@ -17,6 +17,8 @@ const Sidebar = ({ menu, setMenu }: any) => {
   const handleLogout = () => {
     // window.localStorage.removeItem("kol_user");
     router.push(`/login`);
+    router.refresh();
+
   };
   return (
     <>
@@ -30,10 +32,10 @@ const Sidebar = ({ menu, setMenu }: any) => {
             {userData?.role === "member" ? (
              ""
             ) : (
-              <Link href="/individuals" className="flex items-center gap-3">
+              <a href="/individuals" className="flex items-center gap-3">
                 <MdGroup />
                 Individuals
-              </Link>
+              </a>
             )}
 
             {/* <Link
@@ -67,10 +69,10 @@ const Sidebar = ({ menu, setMenu }: any) => {
             {userData?.role === "member" ? (
               ""
             ) : (
-              <Link href="/individuals" className="flex items-center gap-3">
+              <a href="/individuals" className="flex items-center gap-3">
                 <MdGroup />
                 Individuals
-              </Link>
+              </a>
             )}
 
             {/* <Link

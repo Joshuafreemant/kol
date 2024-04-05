@@ -184,7 +184,7 @@ export default function IndividualTables({ allUsers, isOpen, setIsOpen }: any) {
                 )}
 
                 <DropdownItem>
-                  <Link href={`dashboard/${user?._id}`}>View Dashboard</Link>
+                  <a href={`dashboard/${user?._id}`}>View Dashboard</a>
                 </DropdownItem>
                 <DropdownItem
                   onClick={(e: any) => {

@@ -21,8 +21,12 @@ const page = () => {
   useEffect(() => {
     if (user?.user?.role === "superuser") {
       router.push(`/individuals`);
+          router.refresh();
+
     } else {
       router.push(`/login`);
+          router.refresh();
+
     }
   }, []);
 
