@@ -3,17 +3,10 @@ import { sendApprovedEmail, sendWelcomeEmail } from "@/app/lib/util";
 import UserModel from "@/models/userModel";
 
 export async function POST(req: Request, res: Response) {
-  const data: any = await req.json();
-
-  await dbConnect();
-  const existingUser = await UserModel.findOne({ _id: data.id });
-
-  if (!existingUser) {
-    return Response.json({ error: "No such user" }, { status: 400 });
-  }
-
   try {
     await dbConnect();
+    const data: any = await req.json();
+  
     const updatedUser: any = await UserModel.findByIdAndUpdate(
       data.id,
       { $set: { status: data.status } }, // Only update the status field

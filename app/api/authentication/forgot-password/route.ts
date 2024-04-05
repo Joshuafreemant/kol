@@ -6,13 +6,14 @@ import { randomBytes } from "crypto";
 export async function POST(req: Request, res: Response) {
   const data: any = await req.json();
 
-  await dbConnect();
-
-  if (!data?.email) {
-    return Response.json({ error: "Please enter email" }, { status: 400 });
-  }
+ 
 
   try {
+    await dbConnect();
+
+    if (!data?.email) {
+      return Response.json({ error: "Please enter email" }, { status: 400 });
+    }
     const existingUserWithEmail: any = await UserModel.findOne({
       email: data.email,
     });

@@ -6,8 +6,8 @@ import jwt from "jsonwebtoken";
 export async function POST(req: Request, res: Response) {
   const data: any = await req.json();
 
-  await dbConnect();
   try {
+    await dbConnect();
     const existingUserWithEmail: any = await UserModel.findOne({
       email: data.email,
     });
