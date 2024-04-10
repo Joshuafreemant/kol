@@ -61,6 +61,7 @@ const login = () => {
           router.refresh();
 
         }
+        console.log("response.data",response.data)
         dispatch(setUserss(response.data));
 
         // Display success message

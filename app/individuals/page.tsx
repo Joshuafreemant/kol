@@ -30,8 +30,24 @@ const page = () => {
     }
   }, []);
 
+  // useEffect(() => {
+  //   getFetch(`/individuals/get-all-individuals`).then((response: any) => {
+  //     dispatch(
+  //       setAllUser(
+  //         response?.data?.users.filter((data: any) => {
+  //           return data.role !== "superuser";
+  //         })
+  //       )
+  //     );
+  //     setUsersss(
+  //       response?.data?.users.filter((data: any) => {
+  //         return data.role !== "superuser";
+  //       })
+  //     );
+  //   });
+  // }, []);
   useEffect(() => {
-    getFetch(`/individuals/get-all-individuals`).then((response: any) => {
+    getFetch(`/individuals/get-all-individuals/${1}`).then((response: any) => {
       dispatch(
         setAllUser(
           response?.data?.users.filter((data: any) => {
@@ -45,8 +61,9 @@ const page = () => {
         })
       );
     });
+      // console.log("response?.data?.data", response?.data?.data);
+    // });
   }, []);
-
   return (
     <div className="lg:w-full w-full p-3 md:p-6 mt-24 lg:mt-0 b">
       <NextUIProvider>

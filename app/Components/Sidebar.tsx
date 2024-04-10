@@ -5,17 +5,23 @@ import { RiAdminFill } from "react-icons/ri";
 import { postFetch } from "../lib/apiCall";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/hooks";
+import { useDispatch } from "@/redux/store";
+import { setUserss } from "@/redux/slices/userSlice";
+// import { useDispatch } from "react-redux";
 
 const Sidebar = ({ menu, setMenu }: any) => {
   const router = useRouter();
   const user:any = useAppSelector((state) => state.user)
   const userData=user?.user
+  const dispatch = useDispatch();
 
 
   
 
   const handleLogout = () => {
     // window.localStorage.removeItem("kol_user");
+    dispatch(setUserss({}));
+
     router.push(`/login`);
     router.refresh();
 
