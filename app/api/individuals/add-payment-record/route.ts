@@ -28,7 +28,6 @@ export async function POST(req: Request, res: Response) {
       user: "Tolulope",
     });
 
-    console.log("payment",payment)
     const user:any = await UserModel.findOne({ _id: data.individual });
 
      sendNotificationEmail(user.email, user.firstname, "A New Payment Record has just been added to");

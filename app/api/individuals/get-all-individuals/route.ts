@@ -1,6 +1,6 @@
 import { dbConnect } from "@/app/lib/db";
 import UserModel from "@/models/userModel";
-export async function GET() {
+export async function GET(req: Request, res: Response) {
   try {
     await dbConnect();
     const users = await UserModel.find();

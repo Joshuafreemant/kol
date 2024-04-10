@@ -5,7 +5,6 @@ import UserModel from "@/models/userModel";
 
 export async function POST(req: Request, res: Response) {
   const data: any = await req.json();
-  console.log("data",data)
   if (!data._id) {
     return Response.json({ error: "Payment Record invalid" }, { status: 400 });
   }

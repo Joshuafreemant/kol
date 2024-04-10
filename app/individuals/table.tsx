@@ -51,7 +51,6 @@ const INITIAL_VISIBLE_COLUMNS = [
 type User = (typeof users)[0];
 
 export default function IndividualTables({ allUsers, isOpen, setIsOpen }: any) {
-  console.log("allUsers", allUsers);
 
   const [filterValue, setFilterValue] = React.useState("");
   const [singleUser, setSingleUser] = React.useState<any>();
@@ -250,7 +249,6 @@ export default function IndividualTables({ allUsers, isOpen, setIsOpen }: any) {
     })
       .then((response: any) => {
         // setLoading(false);
-        console.log(response?.data);
         dispatch(
           setAllUser(
             response?.data?.data.filter((data: any) => {
