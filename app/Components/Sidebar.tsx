@@ -64,7 +64,7 @@ const Sidebar = ({ menu, setMenu }: any) => {
         </div>
       </div>
 
-      <div className="flex md:hidden  justify-between w-full fixed h-20 text-white bg-purple-900 items-center px-6">
+      <div className="z-50 flex md:hidden  justify-between w-full fixed h-20 text-white bg-purple-900 items-center px-6">
         <div className=" text-white flex flex-col items-start  ">
           <h1 className="font-bold text-3xl ">KOL</h1>
           {/* <h2>Cooperative Society</h2> */}

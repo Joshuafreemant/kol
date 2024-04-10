@@ -227,8 +227,8 @@ export default function AddPaymentModal({
 
                           <div className="flex flex-col w-1/3">
                             <label htmlFor="" className="text-[13px] mb-1">
-                              Balance 
-                              (Prev--
+                              Bal
+                              (
                               {`₦${Number(sharesBalance)?.toLocaleString(
                                 "en-US",
                                 {
@@ -317,8 +317,8 @@ export default function AddPaymentModal({
 
                           <div className="flex flex-col w-1/3">
                             <label htmlFor="" className="text-[13px] mb-1">
-                              Balance
-                              (Prev--
+                              Bal
+                              (
                               {`₦${Number(savingsBalance)?.toLocaleString(
                                 "en-US",
                                 {
@@ -404,8 +404,8 @@ export default function AddPaymentModal({
 
                           <div className="flex flex-col w-1/4">
                             <label htmlFor="" className="text-[13px] mb-1">
-                              Balance
-                              (Prev--
+                              Bal
+                              (
                               {`₦${Number(loansBalance)?.toLocaleString(
                                 "en-US",
                                 {
@@ -516,8 +516,8 @@ export default function AddPaymentModal({
 
                           <div className="flex flex-col w-1/3">
                             <label htmlFor="" className="text-[13px] mb-1">
-                              Balance
-                              (Prev--
+                              Bal
+                              (
                               {`₦${Number(buildingBalance)?.toLocaleString(
                                 "en-US",
                                 {
@@ -606,8 +606,8 @@ export default function AddPaymentModal({
 
                           <div className="flex flex-col w-1/3">
                             <label htmlFor="" className="text-[13px] mb-1">
-                              Balance
-                              (Prev--
+                              Bal
+                              (
                               {`₦${Number(investmentBalance)?.toLocaleString(
                                 "en-US",
                                 {

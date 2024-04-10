@@ -41,6 +41,12 @@ const login = () => {
           });
           return; // Exit the function early if there's an error
         }
+        if (response?.response?.data?.message) {
+          toast(response.response.data.message, {
+            theme: "dark",
+          });
+          return; // Exit the function early if there's an error
+        }
 
         // Check user status
         if (response?.data?.status === "unapproved") {
@@ -52,22 +58,22 @@ const login = () => {
 
         // Redirect based on user role
         if (response?.data?.role === "superuser") {
-
+          toast("Login Successful", {
+            theme: "dark",
+          });
           router.push(`/individuals`);
           router.refresh();
         } else {
-
+          toast("Login Successful", {
+            theme: "dark",
+          });
           router.push(`/dashboard/${response?.data?._id}`);
           router.refresh();
 
         }
-        console.log("response.data",response.data)
         dispatch(setUserss(response.data));
 
         // Display success message
-        toast("Login Successful", {
-          theme: "dark",
-        });
       })
       .catch((error: any) => {
         setLoading(false);
