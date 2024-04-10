@@ -5,7 +5,8 @@ import UserModel from "@/models/userModel";
 
 export async function POST(req: Request, res: Response) {
   const data: any = await req.json();
-  if (!data.amount) {
+  if (data.amount<0) {
+    console.log(data)
     return Response.json({ error: "Amount is required" }, { status: 400 });
   }
   if (!data.date) {
