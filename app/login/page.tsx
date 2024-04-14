@@ -1,5 +1,5 @@
 "use client";
-
+import Head from 'next/head';
 import { useRef, useState } from "react";
 import { User } from "../register/types";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
@@ -87,6 +87,11 @@ const login = () => {
   };
   return (
     <>
+    <Head>
+      <title>KOL Cooperative Society</title>
+      <meta name="description" content={"KOL Cooperative Society Ibadan"} />
+      {/* Add more SEO meta tags here */}
+    </Head>
       <ToastContainer />
       <div className="w-full h-screen flex items-center justify-center">
         <div className="px-6 md:px-0 w-full md:w-5/12 lg:w-4/12 lg:-ml-[240px] ">
