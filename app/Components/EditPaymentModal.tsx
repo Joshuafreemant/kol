@@ -9,7 +9,6 @@ export default function EditPaymentModal({
   isOpen,
   setIsOpen,
   paymentData,
-  
 }: any) {
   function closeModal() {
     setIsOpen(false);
@@ -47,6 +46,12 @@ export default function EditPaymentModal({
       credit: paymentData?.investment_fund.credit,
       balance: paymentData?.investment_fund.balance,
     },
+
+    development: {
+      debit: paymentData?.development?.debit,
+      credit: paymentData?.development?.credit,
+      balance: paymentData?.development?.balance,
+    },
     user: "",
     certified_by: "",
   });
@@ -55,15 +60,16 @@ export default function EditPaymentModal({
     setRecord(paymentData);
   }, [paymentData]);
 
-
   const singleUserId = paymentData?.individual;
-  console.log("first",paymentData?.individual)
+  console.log("first", paymentData?.individual);
   useEffect(() => {
-    getFetch(`/individuals/single-individual/${singleUserId}`).then((response: any) => {
-      // setAllRecords(response?.data?.data);
-      console.log("response?.data?.data", response?.data);
-      setUserDetail(response?.data?.data[0])
-    });
+    getFetch(`/individuals/single-individual/${singleUserId}`).then(
+      (response: any) => {
+        // setAllRecords(response?.data?.data);
+        console.log("response?.data?.data", response?.data);
+        setUserDetail(response?.data?.data[0]);
+      }
+    );
   }, [paymentData?.individual]);
 
   function handleUpdatePayment() {
@@ -77,7 +83,7 @@ export default function EditPaymentModal({
         toast(response?.data.message, {
           theme: "dark",
         });
-        window.location.reload()
+        window.location.reload();
       })
       .catch((error) => {
         console.log(error);
@@ -114,7 +120,7 @@ export default function EditPaymentModal({
               >
                 <Dialog.Panel className="lg:w-5/12 md:w-6/12 w-full border overflow-hidden border-[#ccc] transform rounded-2xl bg-white  text-left align-middle shadow-xl transition-all">
                   <h4 className="bg-purple-800 text-center font-bold p-2 text-white">
-                    {userDetail?.firstname+" "+userDetail?.lastname}
+                    {userDetail?.firstname + " " + userDetail?.lastname}
                   </h4>
 
                   <div className="p-3">
@@ -554,6 +560,83 @@ export default function EditPaymentModal({
                                   ...record,
                                   investment_fund: {
                                     ...record.investment_fund,
+                                    balance: value,
+                                  },
+                                }));
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <div className="bg-gray-200 px-2 py-[2px]">
+                          <label className="font-semibold text-sm">
+                            Development Levy
+                          </label>
+                        </div>
+                        <div className="flex items-center justify-center gap-3 px-3 mt-1">
+                          <div className="flex flex-col w-1/3">
+                            <label htmlFor="" className="text-[13px] mb-1">
+                              Dr
+                            </label>
+
+                            <CurrencyInput
+                              value={record?.development?.debit}
+                              placeholder="Debit Amount"
+                              prefix="₦"
+                              decimalsLimit={2}
+                              className="text-xs px-2 py-[6px] rounded-[4px] border border-gray-400"
+                              onValueChange={(value) => {
+                                setRecord((record: any) => ({
+                                  ...record,
+                                  development: {
+                                    ...record.development,
+                                    debit: value,
+                                  },
+                                }));
+                              }}
+                            />
+                          </div>
+                          <div className="flex flex-col w-1/3">
+                            <label htmlFor="" className="text-[13px] mb-1">
+                              Cr
+                            </label>
+
+                            <CurrencyInput
+                              value={record?.development?.credit}
+                              placeholder="Credit Amount"
+                              prefix="₦"
+                              decimalsLimit={2}
+                              className="text-xs px-2 py-[6px] rounded-[4px] border border-gray-400"
+                              onValueChange={(value) => {
+                                setRecord((record: any) => ({
+                                  ...record,
+                                  development: {
+                                    ...record.development,
+                                    credit: value,
+                                  },
+                                }));
+                              }}
+                            />
+                          </div>
+
+                          <div className="flex flex-col w-1/3">
+                            <label htmlFor="" className="text-[13px] mb-1">
+                              Balance
+                            </label>
+
+                            <CurrencyInput
+                              value={record?.development?.balance}
+                              placeholder="Balance Amount"
+                              prefix="₦"
+                              decimalsLimit={2}
+                              className="text-xs px-2 py-[6px] rounded-[4px] border border-gray-400"
+                              onValueChange={(value) => {
+                                setRecord((record: any) => ({
+                                  ...record,
+                                  development: {
+                                    ...record.development,
                                     balance: value,
                                   },
                                 }));

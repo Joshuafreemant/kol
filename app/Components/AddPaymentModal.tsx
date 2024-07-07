@@ -18,8 +18,6 @@ export default function AddPaymentModal({
     setIsOpen(false);
   }
 
-
-
   const [allRecords, setAllRecords] = useState<any>([]);
 
   const sharesBalance = Number(allRecords[0]?.shares?.balance) || 0;
@@ -27,6 +25,7 @@ export default function AddPaymentModal({
   const loansBalance = Number(allRecords[0]?.loans?.balance) || 0;
   const loansInterest = Number(allRecords[0]?.loans?.interest) || 0;
   const buildingBalance = Number(allRecords[0]?.building_fund?.balance) || 0;
+  const devBalance = Number(allRecords[0]?.development?.balance) || 0;
   const investmentBalance =
     Number(allRecords[0]?.investment_fund?.balance) || 0;
 
@@ -39,7 +38,7 @@ export default function AddPaymentModal({
     shares: {
       debit: 0,
       credit: 0,
-      balance:0,
+      balance: 0,
     },
     savings: {
       debit: 0,
@@ -58,6 +57,11 @@ export default function AddPaymentModal({
       balance: 0,
     },
     investment_fund: {
+      debit: 0,
+      credit: 0,
+      balance: 0,
+    },
+    development: {
       debit: 0,
       credit: 0,
       balance: 0,
@@ -100,7 +104,6 @@ export default function AddPaymentModal({
     });
   }, [individual]);
 
- 
   console.log("allRecords", sharesBalance);
 
   return (
@@ -227,8 +230,7 @@ export default function AddPaymentModal({
 
                           <div className="flex flex-col w-1/3">
                             <label htmlFor="" className="text-[13px] mb-1">
-                              Bal
-                              (
+                              Bal (
                               {`₦${Number(sharesBalance)?.toLocaleString(
                                 "en-US",
                                 {
@@ -239,15 +241,14 @@ export default function AddPaymentModal({
                             </label>
 
                             <CurrencyInput
-                            //@ts-ignore
-                              placeholder=
-                              {`₦${(sharesBalance+Number(record?.shares?.credit)-Number(record.shares?.debit))?.toLocaleString(
-                                "en-US",
-                                {
-                                  maximumFractionDigits: 2,
-                                }
-                              )}`}
-                              
+                              //@ts-ignore
+                              placeholder={`₦${(
+                                sharesBalance +
+                                Number(record?.shares?.credit) -
+                                Number(record.shares?.debit)
+                              )?.toLocaleString("en-US", {
+                                maximumFractionDigits: 2,
+                              })}`}
                               prefix="₦"
                               decimalsLimit={2}
                               className="text-xs px-2 py-[6px] rounded-[4px] border border-gray-400"
@@ -256,7 +257,7 @@ export default function AddPaymentModal({
                                   ...record,
                                   shares: {
                                     ...record.shares,
-                                    balance:  Number(value),
+                                    balance: Number(value),
                                   },
                                 }));
                               }}
@@ -317,8 +318,7 @@ export default function AddPaymentModal({
 
                           <div className="flex flex-col w-1/3">
                             <label htmlFor="" className="text-[13px] mb-1">
-                              Bal
-                              (
+                              Bal (
                               {`₦${Number(savingsBalance)?.toLocaleString(
                                 "en-US",
                                 {
@@ -330,13 +330,13 @@ export default function AddPaymentModal({
 
                             <CurrencyInput
                               //@ts-ignore
-                              placeholder=
-                              {`₦${(savingsBalance+Number(record?.savings?.credit)-Number(record.savings?.debit))?.toLocaleString(
-                                "en-US",
-                                {
-                                  maximumFractionDigits: 2,
-                                }
-                              )}`}
+                              placeholder={`₦${(
+                                savingsBalance +
+                                Number(record?.savings?.credit) -
+                                Number(record.savings?.debit)
+                              )?.toLocaleString("en-US", {
+                                maximumFractionDigits: 2,
+                              })}`}
                               prefix="₦"
                               decimalsLimit={2}
                               className="text-xs px-2 py-[6px] rounded-[4px] border border-gray-400"
@@ -404,8 +404,7 @@ export default function AddPaymentModal({
 
                           <div className="flex flex-col w-1/4">
                             <label htmlFor="" className="text-[13px] mb-1">
-                              Bal
-                              (
+                              Bal (
                               {`₦${Number(loansBalance)?.toLocaleString(
                                 "en-US",
                                 {
@@ -516,8 +515,7 @@ export default function AddPaymentModal({
 
                           <div className="flex flex-col w-1/3">
                             <label htmlFor="" className="text-[13px] mb-1">
-                              Bal
-                              (
+                              Bal (
                               {`₦${Number(buildingBalance)?.toLocaleString(
                                 "en-US",
                                 {
@@ -530,13 +528,13 @@ export default function AddPaymentModal({
                             <CurrencyInput
                               // placeholder="Balance Amount"
                               //@ts-ignore
-                              placeholder=
-                              {`₦${(buildingBalance+Number(record?.building_fund?.credit)-Number(record.building_fund?.debit))?.toLocaleString(
-                                "en-US",
-                                {
-                                  maximumFractionDigits: 2,
-                                }
-                              )}`}
+                              placeholder={`₦${(
+                                buildingBalance +
+                                Number(record?.building_fund?.credit) -
+                                Number(record.building_fund?.debit)
+                              )?.toLocaleString("en-US", {
+                                maximumFractionDigits: 2,
+                              })}`}
                               prefix="₦"
                               decimalsLimit={2}
                               className="text-xs px-2 py-[6px] rounded-[4px] border border-gray-400"
@@ -606,8 +604,7 @@ export default function AddPaymentModal({
 
                           <div className="flex flex-col w-1/3">
                             <label htmlFor="" className="text-[13px] mb-1">
-                              Bal
-                              (
+                              Bal (
                               {`₦${Number(investmentBalance)?.toLocaleString(
                                 "en-US",
                                 {
@@ -619,14 +616,14 @@ export default function AddPaymentModal({
 
                             <CurrencyInput
                               // placeholder="Credit Amount"
-                               //@ts-ignore
-                               placeholder=
-                               {`₦${(investmentBalance+Number(record?.investment_fund?.credit)-Number(record.investment_fund?.debit))?.toLocaleString(
-                                 "en-US",
-                                 {
-                                   maximumFractionDigits: 2,
-                                 }
-                               )}`}
+                              //@ts-ignore
+                              placeholder={`₦${(
+                                investmentBalance +
+                                Number(record?.investment_fund?.credit) -
+                                Number(record.investment_fund?.debit)
+                              )?.toLocaleString("en-US", {
+                                maximumFractionDigits: 2,
+                              })}`}
                               prefix="₦"
                               decimalsLimit={2}
                               className="text-xs px-2 py-[6px] rounded-[4px] border border-gray-400"
@@ -635,6 +632,92 @@ export default function AddPaymentModal({
                                   ...record,
                                   investment_fund: {
                                     ...record.investment_fund,
+                                    balance: Number(value),
+                                  },
+                                }));
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <div className="bg-gray-200 px-2 py-[2px]">
+                          <label className="font-semibold text-sm">
+                            Development Levy
+                          </label>
+                        </div>
+                        <div className="flex items-center justify-center gap-3 px-3 mt-1">
+                          <div className="flex flex-col w-1/3">
+                            <label htmlFor="" className="text-[13px] mb-1">
+                              Dr
+                            </label>
+
+                            <CurrencyInput
+                              placeholder="Debit Amount"
+                              prefix="₦"
+                              decimalsLimit={2}
+                              className="text-xs px-2 py-[6px] rounded-[4px] border border-gray-400"
+                              onValueChange={(value) => {
+                                setRecord((record: any) => ({
+                                  ...record,
+                                  development: {
+                                    ...record.development,
+                                    debit: Number(value),
+                                  },
+                                }));
+                              }}
+                            />
+                          </div>
+                          <div className="flex flex-col w-1/3">
+                            <label htmlFor="" className="text-[13px] mb-1">
+                              Cr
+                            </label>
+
+                            <CurrencyInput
+                              placeholder="Credit Amount"
+                              prefix="₦"
+                              decimalsLimit={2}
+                              className="text-xs px-2 py-[6px] rounded-[4px] border border-gray-400"
+                              onValueChange={(value) => {
+                                setRecord((record: any) => ({
+                                  ...record,
+                                  development: {
+                                    ...record.development,
+                                    credit: Number(value),
+                                  },
+                                }));
+                              }}
+                            />
+                          </div>
+
+                          <div className="flex flex-col w-1/3">
+                            <label htmlFor="" className="text-[13px] mb-1">
+                              Bal (
+                              {`₦${Number(devBalance)?.toLocaleString("en-US", {
+                                maximumFractionDigits: 2,
+                              })}`}
+                              )
+                            </label>
+
+                            <CurrencyInput
+                              // placeholder="Credit Amount"
+                              //@ts-ignore
+                              placeholder={`₦${(
+                                devBalance +
+                                Number(record?.development?.credit) -
+                                Number(record.development?.debit)
+                              )?.toLocaleString("en-US", {
+                                maximumFractionDigits: 2,
+                              })}`}
+                              prefix="₦"
+                              decimalsLimit={2}
+                              className="text-xs px-2 py-[6px] rounded-[4px] border border-gray-400"
+                              onValueChange={(value) => {
+                                setRecord((record: any) => ({
+                                  ...record,
+                                  development: {
+                                    ...record.development,
                                     balance: Number(value),
                                   },
                                 }));

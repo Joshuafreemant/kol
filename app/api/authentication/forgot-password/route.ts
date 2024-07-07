@@ -6,8 +6,6 @@ import { randomBytes } from "crypto";
 export async function POST(req: Request, res: Response) {
   const data: any = await req.json();
 
- 
-
   try {
     await dbConnect();
 

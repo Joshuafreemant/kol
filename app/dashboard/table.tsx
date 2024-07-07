@@ -57,6 +57,7 @@ export default function IndividualPaymentTable({
     "loans",
     "building_fund",
     "investment_fund",
+    "development",
     userDetail?.role === "member" ? "" : "actions",
   ];
 
@@ -313,8 +314,43 @@ export default function IndividualPaymentTable({
             </div>
           </div>
         );
+
+      case "development":
+        return (
+          <div className="flex  items-center gap-4">
+            <div className="">
+              <p className="text-xs text-gray-400 font-semibold">Dr</p>
+              <p className="text-xs">
+                ₦
+                {`${Number(cellValue?.debit)?.toLocaleString("en-US", {
+                  maximumFractionDigits: 2,
+                })}`}
+              </p>
+            </div>
+            <div className="">
+              <p className="text-xs text-gray-400 font-semibold">Cr</p>
+              <p className="text-xs">
+                ₦
+                {`${Number(cellValue?.credit)?.toLocaleString("en-US", {
+                  maximumFractionDigits: 2,
+                })}`}
+              </p>
+            </div>
+            <div className="">
+              <p className="text-xs text-gray-400 font-semibold">Bal</p>
+              <p className="text-xs">
+                ₦
+                {`${Number(cellValue?.balance)?.toLocaleString("en-US", {
+                  maximumFractionDigits: 2,
+                })}`}
+              </p>
+            </div>
+          </div>
+        );
+
       case "actions":
-        return (<div className="relative flex justify-center items-center gap-2">
+        return (
+          <div className="relative flex justify-center items-center gap-2">
             <Dropdown>
               <DropdownTrigger>
                 <Button isIconOnly size="sm" variant="light">
@@ -340,8 +376,9 @@ export default function IndividualPaymentTable({
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
-          </div>)
-        
+          </div>
+        );
+
       default:
         return cellValue;
     }
@@ -469,12 +506,13 @@ export default function IndividualPaymentTable({
 
   return (
     <>
-      <div className="mt-24 md:mt-0 lg:justify-between mb-4  w-full flex md:gap-6 gap-3 flex-wrap lg:flex-nowrap">
+      <div className="mt-24 md:mt-0 lg:justify-between mb-4  w-full flex md:gap-4 gap-3 flex-wrap">
         <DashboardCard data={record} label="shares" />
         <DashboardCard data={record} label="savings" />
         <DashboardCard data={record} label="loans" />
         <DashboardCard data={record} label="building_fund" />
         <DashboardCard data={record} label="investment_fund" />
+        <DashboardCard data={record} label="development" />
       </div>
       <Table
         aria-label="KOL Cooperative society"

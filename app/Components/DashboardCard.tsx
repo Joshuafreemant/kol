@@ -7,6 +7,7 @@ const DashboardCard = ({ data, label }: any) => {
   const loansInterest = Number(data[0]?.loans?.interest) || 0;
   const buildingBalance = Number(data[0]?.building_fund?.balance) || 0;
   const investmentBalance = Number(data[0]?.investment_fund?.balance) || 0;
+  const devBalance = Number(data[0]?.development?.balance) || 0;
 
   // let totalSharesDebit = 0;
   // let totalSharesCredit = 0;
@@ -87,7 +88,7 @@ const DashboardCard = ({ data, label }: any) => {
               <label htmlFor="" className="text-xs">
                 Balance
               </label>
-              {savingsBalance<0 ? (
+              {savingsBalance < 0 ? (
                 <h4 className="font-semibold text-lg">
                   {" "}
                   -₦
@@ -160,7 +161,6 @@ const DashboardCard = ({ data, label }: any) => {
           </div>
         </div>
       )}
-
       {label === "building_fund" && (
         <div className="lg:w-[30%] w-[47%] bg-black  rounded-md p-3 md:p-4">
           <h1 className="md:text-2xl font-bold text-xl text-white">Building</h1>
@@ -190,7 +190,6 @@ const DashboardCard = ({ data, label }: any) => {
           </div>
         </div>
       )}
-
       {label === "investment_fund" && (
         <div className="w-[97%] lg:w-[30%]  bg-green-300  rounded-md p-3 md:p-4">
           <h1 className="md:text-2xl font-bold text-xl">Investment</h1>
@@ -212,6 +211,35 @@ const DashboardCard = ({ data, label }: any) => {
                   {" "}
                   ₦
                   {`${Number(investmentBalance)?.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  })}`}
+                </h4>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      {label === "development" && (
+        <div className="w-[97%] lg:w-[30%]  bg-green-300  rounded-md p-3 md:p-4">
+          <h1 className="md:text-2xl font-bold text-xl">Development</h1>
+          <div className="flex md:items-center justify-between lg:flex-row flex-col">
+            <div className="flex flex-col mt-2">
+              <label htmlFor="" className="text-xs">
+                Balance
+              </label>
+              {devBalance < 0 ? (
+                <h4 className="font-semibold text-lg">
+                  {" "}
+                  -₦
+                  {`${Number(devBalance * -1)?.toLocaleString("en-US", {
+                    maximumFractionDigits: 2,
+                  })}`}
+                </h4>
+              ) : (
+                <h4 className="font-semibold text-lg">
+                  {" "}
+                  ₦
+                  {`${Number(devBalance)?.toLocaleString("en-US", {
                     maximumFractionDigits: 2,
                   })}`}
                 </h4>
