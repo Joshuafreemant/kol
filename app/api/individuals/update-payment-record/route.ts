@@ -22,7 +22,7 @@ export async function POST(req: Request, res: Response) {
     );
     const user:any = await UserModel.findOne({ _id: data.individual });
 
-    sendNotificationEmail(user.email, user.firstname, "A New Payment Update has just been made on");
+   await sendNotificationEmail(user.email, user.firstname, "A New Payment Update has just been made on");
 
     const updatedPaymentData=updatedUserPayment
     return Response.json({updatedPaymentData, message:"Payment updated Successfully" }, { status: 200 });

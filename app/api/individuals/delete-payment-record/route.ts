@@ -15,7 +15,7 @@ export async function POST(req: Request, res: Response) {
 
     const user:any = await UserModel.findOne({ _id: data.individual });
 
-    sendNotificationEmail(user.email, user.firstname, "A New Payment Record has just been deleted on");
+    await sendNotificationEmail(user.email, user.firstname, "A New Payment Record has just been deleted on");
 
     // const updatedPaymentData=deletedUserPayment
     const userPayment = await PaymentRecordModel.find({individual:data.individual});

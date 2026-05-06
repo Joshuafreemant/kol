@@ -49,7 +49,7 @@ export async function POST(req: Request, res: Response) {
       status: data.status,
       password: hash,
     });
-    sendWelcomeEmail(data.email, data.firstname);
+    await sendWelcomeEmail(data.email, data.firstname);
     return Response.json(
       { data: user, message:"User created Successfully" },
     );

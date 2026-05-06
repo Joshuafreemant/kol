@@ -1,111 +1,78 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  // Set up your email transport configuration
   host: "smtp.gmail.com",
   port: 465,
-  secure: true, // use SSL
+  secure: true,
   auth: {
     user: "tolexjoshua@gmail.com",
     pass: "xnac kxrm olkj hpoj",
   },
 });
 
-const sendWelcomeEmail = (email: string, name: string) => {
-  const welcomeMessage = `
-  Dear ${name},
-  🎉 Welcome to KOL Cooperative Society! 🎉
-  Your account approval is underway. Once approved, access your financial records and more! Stay tuned for updates.
-  The KOL Cooperative Society Team 🚀
-  `;
-
+const sendWelcomeEmail = async (email: string, name: string) => {
   const mailOptions = {
-    from: "kola@gmail.com",
+    from: "tolexjoshua@gmail.com",
     to: email,
     subject: "Welcome to KOL!",
-    text: welcomeMessage,
+    text: `Dear ${name},\n\n🎉 Welcome to KOL Cooperative Society! 🎉\nYour account approval is underway. Once approved, access your financial records and more!\n\nThe KOL Cooperative Society Team 🚀`,
   };
 
-  transporter.sendMail(mailOptions, (error: any, info: any) => {
-    if (error) {
-      console.error("Error sending  email:", error);
-    } else {
-      console.log(" email sent:", info.response);
-    }
-  });
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Welcome email sent:", info.response);
+  } catch (error) {
+    console.error("Error sending welcome email:", error);
+  }
 };
 
-const sendResetEmail = (email:string, resetToken:string) => {
+const sendResetEmail = async (email: string, resetToken: string) => {
   const mailOptions = {
     from: "tolexjoshua@gmail.com",
     to: email,
     subject: "Password Reset",
-    text: `Click the following link to reset your password: https://bodijaibkolcics.org.ng/reset/${resetToken}`,
+    text: `Click the following link to reset your password:\n\nhttps://bodijaibkolcics.org.ng/reset/${resetToken}\n\nThis link expires in 1 hour.\n\nIf you did not request a password reset, please ignore this email.`,
   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error("Error sending reset email:", error);
-    } else {
-      console.log("Reset email sent:", info.response);
-    }
-  });
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Reset email sent:", info.response);
+  } catch (error) {
+    console.error("Error sending reset email:", error);
+    throw error; // re-throw so the API route can catch it
+  }
 };
 
-const sendApprovedEmail = (email: string, name: string) => {
-  const welcomeMessage = `
-  Dear ${name},
-  
-  🎉 Congratulations! Your account has been
-  approved! 🎉
-
-  You can now log in to access your financial records 
-  and enjoy all the features of KOL Cooperative Society.
-
-  Welcome aboard!
-
-  The KOL Cooperative Society Team 🚀
-  `;
-
+const sendApprovedEmail = async (email: string, name: string) => {
   const mailOptions = {
-    from: "kola@gmail.com",
+    from: "tolexjoshua@gmail.com",
     to: email,
-    subject: "Welcome to KOL Membership Approved!",
-    text: welcomeMessage,
+    subject: "KOL Membership Approved!",
+    text: `Dear ${name},\n\n🎉 Congratulations! Your account has been approved! 🎉\n\nYou can now log in to access your financial records and enjoy all the features of KOL Cooperative Society.\n\nWelcome aboard!\n\nThe KOL Cooperative Society Team 🚀`,
   };
 
-  transporter.sendMail(mailOptions, (error: any, info: any) => {
-    if (error) {
-      console.error("Error sending  email:", error);
-    } else {
-      console.log(" email sent:", info.response);
-    }
-  });
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Approved email sent:", info.response);
+  } catch (error) {
+    console.error("Error sending approved email:", error);
+  }
 };
-const sendNotificationEmail = (email: string, name: string, text:any) => {
-  const welcomeMessage = `
-  Dear ${name},
-  ${text}
-  your dashboard 🎉.
-  Login here to view
 
-  The KOL Cooperative Society Team 🚀
-  `;
-
+const sendNotificationEmail = async (email: string, name: string, text: string) => {
   const mailOptions = {
-    from: "kola@gmail.com",
+    from: "tolexjoshua@gmail.com",
     to: email,
-    subject: "KOL New payment Record!",
-    text: welcomeMessage,
+    subject: "KOL New Payment Record!",
+    text: `Dear ${name},\n\n${text} your dashboard 🎉.\n\nLogin here to view your records.\n\nThe KOL Cooperative Society Team 🚀`,
   };
 
-  transporter.sendMail(mailOptions, (error: any, info: any) => {
-    if (error) {
-      console.error("Error sending  email:", error);
-    } else {
-      console.log(" email sent:", info.response);
-    }
-  });
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Notification email sent:", info.response);
+  } catch (error) {
+    console.error("Error sending notification email:", error);
+  }
 };
 
-export { sendWelcomeEmail,sendApprovedEmail,sendNotificationEmail,sendResetEmail };
+export { sendWelcomeEmail, sendApprovedEmail, sendNotificationEmail, sendResetEmail };

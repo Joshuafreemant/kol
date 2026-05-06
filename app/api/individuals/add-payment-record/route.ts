@@ -31,7 +31,7 @@ console.log("data",data)
 
     const user:any = await UserModel.findOne({ _id: data.individual });
 
-    sendNotificationEmail(user.email, user.firstname, "A New Payment Record has just been added to");
+   await sendNotificationEmail(user.email, user.firstname, "A New Payment Record has just been added to");
 
     return Response.json({data: payment, message:"Payment created Successfully" }, { status: 200 });
     
