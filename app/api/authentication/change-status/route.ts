@@ -13,7 +13,6 @@ export async function POST(req: Request, res: Response) {
       { new: true }
     );
     const { password, ...updatedInfo } = updatedUser;
-    sendApprovedEmail(updatedUser._doc.email, updatedUser._doc.firstname);
 
     const allUsers: any = await UserModel.find();
     return Response.json({
