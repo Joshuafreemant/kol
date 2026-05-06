@@ -2,25 +2,34 @@
 
 import { useState } from "react";
 import { postFetch } from "../lib/apiCall";
-import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+type Mode = "email" | "phone";
+
 const Forgot = () => {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [email, setEmail] = useState("");
+  const [mode, setMode] = useState<Mode>("email");
+  const [value, setValue] = useState("");
+  const [resolvedEmail, setResolvedEmail] = useState("");
 
   const handleForgot = () => {
-    if (!email) {
-      toast("Please enter your email address.", { theme: "dark" });
+    if (!value.trim()) {
+      toast(`Please enter your ${mode === "email" ? "email address" : "phone number"}.`, {
+        theme: "dark",
+      });
       return;
     }
+
     setLoading(true);
-    postFetch("/authentication/forgot-password", {
-      email: email.toLowerCase(),
-    })
+
+    const payload =
+      mode === "email"
+        ? { email: value.toLowerCase().trim() }
+        : { phone_number: value.trim() };
+
+    postFetch("/authentication/forgot-password", payload)
       .then((response: any) => {
         setLoading(false);
 
@@ -29,6 +38,8 @@ const Forgot = () => {
           return;
         }
 
+        // Backend returns the masked email so we can show it in the success state
+        setResolvedEmail(response?.data?.email || "");
         toast(response?.data?.message, { theme: "dark" });
         setSubmitted(true);
       })
@@ -38,6 +49,12 @@ const Forgot = () => {
           theme: "dark",
         });
       });
+  };
+
+  const handleReset = () => {
+    setSubmitted(false);
+    setValue("");
+    setResolvedEmail("");
   };
 
   return (
@@ -72,7 +89,7 @@ const Forgot = () => {
             Forgot Password?
           </h1>
           <p className="text-[15px] text-gray-500 mb-6">
-            Enter your email and we will send you a recovery link
+            Enter your email or phone number and we'll send a recovery link to your email
           </p>
 
           <div className="h-px bg-gray-200 mb-6" />
@@ -85,20 +102,24 @@ const Forgot = () => {
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z" />
                 </svg>
               </div>
-              <h2 className="text-[18px] font-semibold text-[#1a1a2e] mb-2"
-                style={{ fontFamily: "'Playfair Display', serif" }}>
+              <h2
+                className="text-[18px] font-semibold text-[#1a1a2e] mb-2"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
                 Check your email
               </h2>
               <p className="text-[14px] text-gray-500 leading-relaxed mb-1">
                 We have sent a password recovery link to
               </p>
-              <p className="text-[15px] font-semibold text-[#3C3489] mb-6">
-                {email}
-              </p>
+              {resolvedEmail && (
+                <p className="text-[15px] font-semibold text-[#3C3489] mb-6">
+                  {resolvedEmail}
+                </p>
+              )}
               <p className="text-[13px] text-gray-400 leading-relaxed">
                 Did not receive it? Check your spam folder or{" "}
                 <button
-                  onClick={() => setSubmitted(false)}
+                  onClick={handleReset}
                   className="text-[#534AB7] font-medium hover:underline"
                 >
                   try again
@@ -108,19 +129,47 @@ const Forgot = () => {
           ) : (
             // ─── Form state ───────────────────────────────────────────────────
             <>
+              {/* Mode toggle */}
+              <div className="flex rounded-lg border border-gray-200 overflow-hidden mb-6">
+                <button
+                  type="button"
+                  onClick={() => { setMode("email"); setValue(""); }}
+                  className={`flex-1 py-2.5 text-[14px] font-medium transition-colors ${
+                    mode === "email"
+                      ? "bg-[#3C3489] text-white"
+                      : "bg-white text-gray-500 hover:bg-gray-50"
+                  }`}
+                >
+                  Email Address
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setMode("phone"); setValue(""); }}
+                  className={`flex-1 py-2.5 text-[14px] font-medium transition-colors ${
+                    mode === "phone"
+                      ? "bg-[#3C3489] text-white"
+                      : "bg-white text-gray-500 hover:bg-gray-50"
+                  }`}
+                >
+                  Phone Number
+                </button>
+              </div>
+
               <div className="bg-[#f5f4f9] border-l-[3px] border-[#534AB7] rounded-r-lg px-4 py-3 text-[13px] text-gray-500 leading-relaxed mb-6">
-                Enter the email address linked to your cooperative account. A reset link will be sent to you.
+                {mode === "email"
+                  ? "Enter the email address linked to your cooperative account. A reset link will be sent to you."
+                  : "Enter the phone number linked to your cooperative account. A reset link will be sent to your registered email."}
               </div>
 
               <div className="flex flex-col gap-2 mb-6">
                 <label className="text-[15px] font-medium text-gray-700">
-                  Email Address
+                  {mode === "email" ? "Email Address" : "Phone Number"}
                 </label>
                 <input
-                  type="email"
-                  placeholder="e.g. john.doe@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type={mode === "email" ? "email" : "tel"}
+                  placeholder={mode === "email" ? "e.g. john.doe@email.com" : "e.g. 08140375758"}
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleForgot()}
                   className="w-full text-base px-4 py-3 rounded-lg border-[1.5px] border-gray-300 bg-gray-50 text-gray-900 outline-none focus:border-[#534AB7] focus:bg-white transition-colors"
                 />

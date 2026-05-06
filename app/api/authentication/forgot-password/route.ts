@@ -3,64 +3,70 @@ import { sendResetEmail } from "@/app/lib/util";
 import UserModel from "@/models/userModel";
 import { randomBytes } from "crypto";
 
-export async function POST(req: Request, res: Response) {
+/** Masks an email for safe display: in***@gmail.com */
+function maskEmail(email: string): string {
+  const [local, domain] = email.split("@");
+  if (!domain) return email;
+  const visible = local.slice(0, 2);
+  return `${visible}***@${domain}`;
+}
+
+export async function POST(req: Request) {
   const data: any = await req.json();
 
   try {
     await dbConnect();
 
-    if (!data?.email) {
-      return Response.json({ error: "Please enter email" }, { status: 400 });
+    const { email, phone_number } = data;
+
+    // Must supply at least one identifier
+    if (!email && !phone_number) {
+      return Response.json(
+        { error: "Please enter your email address or phone number." },
+        { status: 400 }
+      );
     }
-    const existingUserWithEmail: any = await UserModel.findOne({
-      email: data.email,
-    });
-    if (!existingUserWithEmail) {
-      return Response.json({ error: "User Not Found" }, { status: 400 });
+
+    // Look up the user by whichever identifier was provided
+    let user: any = null;
+
+    if (email) {
+      user = await UserModel.findOne({ email: email.toLowerCase().trim() });
+      if (!user) {
+        return Response.json({ error: "No account found with that email address." }, { status: 400 });
+      }
+    } else {
+      user = await UserModel.findOne({ phone_number: phone_number.trim() });
+      if (!user) {
+        return Response.json({ error: "No account found with that phone number." }, { status: 400 });
+      }
+      // Phone lookup still requires the account to have an email to send the link
+      if (!user.email) {
+        return Response.json(
+          { error: "No email address is associated with this account. Please contact support." },
+          { status: 400 }
+        );
+      }
     }
 
-    const resetToken = randomBytes(20).toString('hex');
-    existingUserWithEmail.resetPasswordToken = resetToken;
-    existingUserWithEmail.resetPasswordExpires = Date.now() + 3600000; // Token expires in 1 hour
+    // Generate and store the reset token
+    const resetToken = randomBytes(20).toString("hex");
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    await user.save();
 
-    await existingUserWithEmail.save();
+    // Always send the link to the account's email
+    await sendResetEmail(user.email, resetToken);
 
-    await sendResetEmail(data.email, resetToken);  
     return Response.json({
-      message: "Reset Instructions sent Successfully",
+      message: "Reset instructions sent successfully.",
+      email: maskEmail(user.email), // safe to expose — masked
     });
-    
   } catch (error) {
-    return Response.json({
-      error,
-      message: "Error Changing Status",
-    });
+    console.error("Forgot password error:", error);
+    return Response.json(
+      { error: "Something went wrong. Please try again later." },
+      { status: 500 }
+    );
   }
 }
-
-
-//     const { resetToken, newPassword } = req.body;
-//     try {
-//       const user = await User.findOne({
-//         resetPasswordToken: resetToken,
-//         resetPasswordExpires: { $gt: Date.now() },
-//       });
-  
-//       if (!user) {
-//         return res
-//           .status(400)
-//           .json({ message: "Invalid or expired reset token" });
-//       }
-//       const hash = bcrypt.hashSync(newPassword, 5);
-//       user.password = hash;
-//       user.resetPasswordToken = undefined;
-//       user.resetPasswordExpires = undefined;
-  
-//       await user.save();
-  
-//       res.json({ message: "Password reset successful" });
-//     } catch (error) {
-//       console.error("Error resetting password:", error);
-//       res.status(500).json({ error: "Internal Server Error" });
-//     }
-//   };
