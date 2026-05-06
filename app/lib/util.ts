@@ -9,10 +9,10 @@ const transporter = nodemailer.createTransport({
     pass: "xnac kxrm olkj hpoj",
   },
 });
-
+const FROM = `"KOL Cooperative Society" <cooperativebodija@gmail.com>`;
 const sendWelcomeEmail = async (email: string, name: string) => {
   const mailOptions = {
-    from: "tolexjoshua@gmail.com",
+    from: FROM,
     to: email,
     subject: "Welcome to KOL!",
     text: `Dear ${name},\n\n🎉 Welcome to KOL Cooperative Society! 🎉\nYour account approval is underway. Once approved, access your financial records and more!\n\nThe KOL Cooperative Society Team 🚀`,
@@ -28,7 +28,7 @@ const sendWelcomeEmail = async (email: string, name: string) => {
 
 const sendResetEmail = async (email: string, resetToken: string) => {
   const mailOptions = {
-    from: "tolexjoshua@gmail.com",
+    from: FROM,
     to: email,
     subject: "Password Reset",
     text: `Click the following link to reset your password:\n\nhttps://bodijaibkolcics.org.ng/reset/${resetToken}\n\nThis link expires in 1 hour.\n\nIf you did not request a password reset, please ignore this email.`,
@@ -45,7 +45,7 @@ const sendResetEmail = async (email: string, resetToken: string) => {
 
 const sendApprovedEmail = async (email: string, name: string) => {
   const mailOptions = {
-    from: "tolexjoshua@gmail.com",
+    from: FROM,
     to: email,
     subject: "KOL Membership Approved!",
     text: `Dear ${name},\n\n🎉 Congratulations! Your account has been approved! 🎉\n\nYou can now log in to access your financial records and enjoy all the features of KOL Cooperative Society.\n\nWelcome aboard!\n\nThe KOL Cooperative Society Team 🚀`,
@@ -61,7 +61,7 @@ const sendApprovedEmail = async (email: string, name: string) => {
 
 const sendNotificationEmail = async (email: string, name: string, text: string) => {
   const mailOptions = {
-    from: "tolexjoshua@gmail.com",
+    from: FROM,
     to: email,
     subject: "KOL New Payment Record!",
     text: `Dear ${name},\n\n${text} your dashboard 🎉.\n\nLogin here to view your records.\n\nThe KOL Cooperative Society Team 🚀`,

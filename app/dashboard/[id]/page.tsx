@@ -48,7 +48,7 @@ const Page = ({ params }: any) => {
           >
             Member Dashboard
           </h1>
-          <p className="text-[14px] text-gray-500 mt-0.5">
+          <p className="text-[14px] text-gray-500 mt-8 lg:mt-0.5">
             Payment records and account balances
           </p>
         </div>
