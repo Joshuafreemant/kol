@@ -22,24 +22,23 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   const [menu, setMenu] = useState(false);
-
+  const isAuthPage =
+    pathname === "/" ||
+    pathname.includes("login") ||
+    pathname.includes("register") ||
+    pathname.includes("superuser") ||
+    pathname.includes("forgot") ||
+    pathname.includes("reset");
   return (
     <Providers>
       <html lang="en">
         <body className="flex gap-4">
-          {pathname === "/" ||
-          pathname.includes("login") ||
-          pathname.includes("register") ||
-          pathname.includes("superuser") ||
-          pathname.includes("forgot") ||
-          pathname.includes("reset") ? (
-            ""
-          ) : (
-            <Sidebar menu={menu} setMenu={setMenu} />
-          )}
-          <div className="lg:ml-[240px]  w-full">{children}</div>
+          {!isAuthPage && <Sidebar menu={menu} setMenu={setMenu} />}
+          <div className={`${isAuthPage ? "w-full" : "lg:ml-[240px] w-full"}`}>
+            {children}
+          </div>
         </body>
       </html>
-      </Providers>
+    </Providers>
   );
 }

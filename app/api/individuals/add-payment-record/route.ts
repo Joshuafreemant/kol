@@ -5,14 +5,13 @@ import UserModel from "@/models/userModel";
 
 export async function POST(req: Request, res: Response) {
   const data: any = await req.json();
-  if (data.amount<0) {
-    console.log(data)
-    return Response.json({ error: "Amount is required" }, { status: 400 });
+   if (!data.amount || data.amount <= 0) {
+    return Response.json({ error: "A valid amount is required" }, { status: 400 });
   }
   if (!data.date) {
     return Response.json({ error: "date is required" }, { status: 400 });
   }
-
+console.log("data",data)
   try {
     await dbConnect();
     const payment = await PaymentRecordModel.create({
@@ -26,12 +25,13 @@ export async function POST(req: Request, res: Response) {
       At: new Date(),
       building_fund: data.building_fund,
       investment_fund: data.investment_fund,
-      user: "Tolulope",
+      development: data.development,
+      user: "KOL Admin",
     });
 
     const user:any = await UserModel.findOne({ _id: data.individual });
 
-     sendNotificationEmail(user.email, user.firstname, "A New Payment Record has just been added to");
+    sendNotificationEmail(user.email, user.firstname, "A New Payment Record has just been added to");
 
     return Response.json({data: payment, message:"Payment created Successfully" }, { status: 200 });
     

@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { CiSquarePlus } from "react-icons/ci";
+"use client";
+import React, { useState } from "react";
 import { HiOutlineDotsVertical } from "react-icons/hi";
-import { FaChevronDown } from "react-icons/fa6";
 import { IoSearchSharp } from "react-icons/io5";
 import {
   Table,
@@ -18,24 +17,14 @@ import {
   DropdownItem,
   Pagination,
   Selection,
-  ChipProps,
   SortDescriptor,
+  ChipProps,
 } from "@nextui-org/react";
-
 import { columns, users } from "./data";
-import { capitalize } from "./utils";
 import AddPaymentModal from "../Components/AddPaymentModal";
-import Link from "next/link";
 import { postFetch } from "../lib/apiCall";
 import { useDispatch } from "react-redux";
 import { setAllUser } from "@/redux/slices/userSlice";
-import { useAppSelector } from "@/redux/hooks";
-
-const statusColorMap: Record<string, ChipProps["color"]> = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
-};
 
 const INITIAL_VISIBLE_COLUMNS = [
   "id",
@@ -51,29 +40,24 @@ const INITIAL_VISIBLE_COLUMNS = [
 type User = (typeof users)[0];
 
 export default function IndividualTables({ allUsers, isOpen, setIsOpen }: any) {
+  const dispatch = useDispatch();
 
   const [filterValue, setFilterValue] = React.useState("");
   const [singleUser, setSingleUser] = React.useState<any>();
-  const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
-    new Set([])
-  );
-  const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
-    new Set(INITIAL_VISIBLE_COLUMNS)
-  );
-  const [statusFilter, setStatusFilter] = React.useState<Selection>("all");
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
+  const [visibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
+  const [statusFilter] = React.useState<Selection>("all");
+  const [rowsPerPage, setRowsPerPage] = React.useState(50);
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
     column: "age",
     direction: "ascending",
   });
-
   const [page, setPage] = React.useState(1);
 
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
-
     return columns.filter((column) =>
       Array.from(visibleColumns).includes(column.uid)
     );
@@ -81,28 +65,19 @@ export default function IndividualTables({ allUsers, isOpen, setIsOpen }: any) {
 
   const filteredItems = React.useMemo(() => {
     let filteredUsers = [...allUsers];
-
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter((user) =>
         user.firstname.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
-    // if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
-    //   filteredUsers = filteredUsers.filter((user) =>
-    //     Array.from(statusFilter).includes(user.status),
-    //   );
-    // }
-
     return filteredUsers;
-  }, [users, filterValue, statusFilter]);
+  }, [allUsers, filterValue]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-
-    return filteredItems.slice(start, end);
+    return filteredItems.slice(start, start + rowsPerPage);
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = React.useMemo(() => {
@@ -110,280 +85,206 @@ export default function IndividualTables({ allUsers, isOpen, setIsOpen }: any) {
       const first = a[sortDescriptor.column as keyof any] as number;
       const second = b[sortDescriptor.column as keyof any] as number;
       const cmp = first < second ? -1 : first > second ? 1 : 0;
-
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
 
+  const handleApprove = (data: any) => {
+    postFetch("/authentication/change-status", { id: data._id, status: "approved" })
+      .then((response: any) => {
+        dispatch(
+          setAllUser(
+            response?.data?.data.filter((d: any) => d.role !== "superuser")
+          )
+        );
+        window.location.reload();
+      })
+      .catch(console.log);
+  };
+
+  const handleUnApprove = (data: any) => {
+    postFetch("/authentication/change-status", { id: data._id, status: "unapproved" })
+      .then((response: any) => {
+        dispatch(
+          setAllUser(
+            response?.data?.data.filter((d: any) => d.role !== "superuser")
+          )
+        );
+        window.location.reload();
+      })
+      .catch(console.log);
+  };
+
   const renderCell = React.useCallback((user: any, columnKey: React.Key) => {
     const cellValue = user[columnKey as keyof any];
-
     switch (columnKey) {
       case "id":
-        return <p>{allUsers.indexOf(user) + 1}.</p>;
+        return (
+          <p className="text-[13px] text-gray-400 font-medium">
+            {allUsers.indexOf(user) + 1}.
+          </p>
+        );
       case "firstname":
         return (
-          <div className="flex  items-center gap-2">
-            <div className="bg-purple-600 text-white font-semibold h-10 w-10 rounded-full p-3 flex items-center justify-center">
+          <div className="flex items-center gap-3">
+            <div className="bg-[#3C3489] text-white text-[13px] font-semibold h-9 w-9 rounded-full flex items-center justify-center shrink-0">
               {user?.firstname[0]?.toUpperCase()}
             </div>
-            <p className="font-normal text-small capitalize">{cellValue}</p>
+            <p className="text-[14px] font-medium text-gray-800 capitalize">
+              {cellValue}
+            </p>
           </div>
         );
       case "role":
         return (
-          <div className="flex flex-col ">
-            <p className="text-bold text-small capitalize">{cellValue}</p>
-          </div>
+          <span className="text-[13px] text-gray-600 capitalize bg-gray-100 px-2.5 py-1 rounded-full">
+            {cellValue}
+          </span>
         );
-
       case "status":
-        return (
-          <>
-            {cellValue === "unapproved" ? (
-              <div className="bg-red-400 text-white rounded text-center p-1">
-                <p className="text-bold text-xs capitalize">{cellValue}</p>
-              </div>
-            ) : (
-              <div className="bg-green-300 text-center rounded p-1">
-                <p className="text-bold text-xs capitalize">{cellValue}</p>
-              </div>
-            )}
-          </>
+        return cellValue === "unapproved" ? (
+          <span className="inline-flex items-center gap-1.5 bg-red-50 text-red-600 border border-red-200 text-[12px] font-medium px-2.5 py-1 rounded-full capitalize">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+            {cellValue}
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 border border-green-200 text-[12px] font-medium px-2.5 py-1 rounded-full capitalize">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            {cellValue}
+          </span>
         );
-
       case "actions":
         return (
-          <div className="relative flex justify-center items-center gap-2">
+          <div className="flex justify-center">
             <Dropdown>
               <DropdownTrigger>
                 <Button isIconOnly size="sm" variant="light">
-                  <HiOutlineDotsVertical className="text-gray-700 font-semibold" />
+                  <HiOutlineDotsVertical className="text-gray-500" />
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
                 {user?.status !== "approved" ? (
                   <DropdownItem
-                    onClick={() => {
-                      handleApprove(user);
-                      console.log(user);
-                    }}
+                    onClick={() => handleApprove(user)}
+                    className="text-green-600"
                   >
-                    Approve
+                    Approve member
                   </DropdownItem>
                 ) : (
                   <DropdownItem
-                    onClick={() => {
-                      handleUnApprove(user);
-                      console.log(user);
-                    }}
+                    onClick={() => handleUnApprove(user)}
+                    className="text-red-500"
                   >
-                    UnApprove
+                    Revoke approval
                   </DropdownItem>
                 )}
-
                 <DropdownItem>
-                  <a href={`dashboard/${user?._id}`}>View Dashboard</a>
+                  <a href={`dashboard/${user?._id}`}>View dashboard</a>
                 </DropdownItem>
                 <DropdownItem
-                  onClick={(e: any) => {
+                  onClick={() => {
                     setIsOpen(true);
-                    handleAddRecord(user);
+                    setSingleUser(user);
                   }}
                 >
-                  Add Payment Record
+                  Add payment record
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
         );
       default:
-        return cellValue;
+        return (
+          <span className="text-[13px] text-gray-700">{cellValue}</span>
+        );
     }
-  }, []);
-
-  const onNextPage = React.useCallback(() => {
-    if (page < pages) {
-      setPage(page + 1);
-    }
-  }, [page, pages]);
-
-  const onPreviousPage = React.useCallback(() => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  }, [page]);
-
-  const onRowsPerPageChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setRowsPerPage(Number(e.target.value));
-      setPage(1);
-    },
-    []
-  );
+  }, [allUsers]);
 
   const onSearchChange = React.useCallback((value?: string) => {
-    if (value) {
-      setFilterValue(value);
-      setPage(1);
-    } else {
-      setFilterValue("");
-    }
-  }, []);
-
-  const onClear = React.useCallback(() => {
-    setFilterValue("");
+    setFilterValue(value || "");
     setPage(1);
   }, []);
 
-  const handleAddRecord = (data: any) => {
-    setSingleUser(data);
-  };
-  const dispatch = useDispatch();
-
-  const handleApprove = (data: any) => {
-    // setLoading(true);
-    postFetch("/authentication/change-status", {
-      id: data._id,
-      status: "approved",
-    })
-      .then((response: any) => {
-        // setLoading(false);
-        dispatch(
-          setAllUser(
-            response?.data?.data.filter((data: any) => {
-              return data.role !== "superuser";
-            })
-          )
-        );
-        window.location.reload();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const handleUnApprove = (data: any) => {
-    // setLoading(true);
-    postFetch("/authentication/change-status", {
-      id: data._id,
-      status: "unapproved",
-    })
-      .then((response: any) => {
-        // setLoading(false);
-
-        dispatch(
-          setAllUser(
-            response?.data?.data.filter((data: any) => {
-              return data.role !== "superuser";
-            })
-          )
-        );
-        window.location.reload();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const topContent = React.useMemo(() => {
-    return (
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[44%]"
-            placeholder="Search by name..."
-            startContent={<IoSearchSharp />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          />
-          {/* <div className="flex gap-3">
-            <Button color="primary" endContent={<CiSquarePlus />}>
-              Add New
-            </Button>
-          </div> */}
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">
-            Total {allUsers?.length} users
-          </span>
-          <label className="flex items-center text-default-400 text-small">
-            Rows per page:
-            <select
-              className="bg-transparent outline-none text-default-400 text-small"
-              onChange={onRowsPerPageChange}
-            >
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="30">30</option>
-            </select>
-          </label>
-        </div>
-      </div>
-    );
-  }, [
-    filterValue,
-    statusFilter,
-    visibleColumns,
-    onSearchChange,
-    onRowsPerPageChange,
-    users.length,
-    hasSearchFilter,
-  ]);
-
-  const bottomContent = React.useMemo(() => {
-    return (
-      <div className="py-2 px-2 flex justify-between items-center">
-        {/* <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
-            ? "All items selected"
-            : `${selectedKeys.size} of ${filteredItems.length} selected`}
-        </span> */}
-        <Pagination
-          isCompact
-          showControls
-          showShadow
-          color="primary"
-          page={page}
-          total={pages}
-          onChange={setPage}
+  const topContent = React.useMemo(() => (
+    <div className="flex flex-col gap-4 mb-2">
+      <div className="flex justify-between gap-3 items-center">
+        <Input
+          isClearable
+          className="w-full sm:max-w-[44%]"
+          placeholder="Search by name..."
+          startContent={<IoSearchSharp className="text-gray-400" />}
+          value={filterValue}
+          onClear={() => { setFilterValue(""); setPage(1); }}
+          onValueChange={onSearchChange}
         />
-        <div className="hidden sm:flex w-[30%] justify-end gap-2">
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onPreviousPage}
-          >
-            Previous
-          </Button>
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onNextPage}
-          >
-            Next
-          </Button>
-        </div>
+        <span className="text-[13px] text-gray-400">
+          {filteredItems.length} member{filteredItems.length !== 1 ? "s" : ""} found
+        </span>
       </div>
-    );
-  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+      <div className="flex justify-end">
+        <label className="flex items-center text-[13px] text-gray-400 gap-2">
+          Rows per page:
+          <select
+            className="bg-transparent outline-none text-gray-500 text-[13px]"
+            onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
+          >
+            <option value="50">50</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="100">100</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  ), [filterValue, filteredItems.length, onSearchChange]);
+
+  const bottomContent = React.useMemo(() => (
+    <div className="py-3 px-2 flex justify-between items-center border-t border-gray-100 mt-2">
+      <Pagination
+        isCompact
+        showControls
+        showShadow
+        color="primary"
+        page={page}
+        total={pages}
+        onChange={setPage}
+      />
+      <div className="hidden sm:flex gap-2">
+        <Button
+          isDisabled={page === 1}
+          size="sm"
+          variant="flat"
+          onPress={() => setPage((p) => Math.max(1, p - 1))}
+        >
+          Previous
+        </Button>
+        <Button
+          isDisabled={page === pages}
+          size="sm"
+          variant="flat"
+          onPress={() => setPage((p) => Math.min(pages, p + 1))}
+        >
+          Next
+        </Button>
+      </div>
+    </div>
+  ), [page, pages]);
 
   return (
     <>
       <Table
-        aria-label="KOL Cooperative society"
+        aria-label="KOL Cooperative Society members"
         isHeaderSticky
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
         classNames={{
-          wrapper: "max-h-[500px]",
+          wrapper: "max-h-[520px] shadow-none border border-gray-100 rounded-xl",
+          th: "bg-[#f5f4f9] text-[#3C3489] text-[13px] font-semibold uppercase tracking-wide",
+          td: "py-3",
         }}
         selectedKeys={selectedKeys}
-        // selectionMode="multiple"
         sortDescriptor={sortDescriptor}
         topContent={topContent}
         topContentPlacement="outside"
@@ -401,9 +302,9 @@ export default function IndividualTables({ allUsers, isOpen, setIsOpen }: any) {
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={"No users found"} items={sortedItems}>
+        <TableBody emptyContent={"No members found"} items={sortedItems}>
           {(item) => (
-            <TableRow key={item._id}>
+            <TableRow key={item._id} className="hover:bg-[#f5f4f9] transition-colors">
               {(columnKey) => (
                 <TableCell>{renderCell(item, columnKey)}</TableCell>
               )}

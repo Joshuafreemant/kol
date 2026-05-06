@@ -41,6 +41,11 @@ const paymentRecordSchema = new Mongoose.Schema({
     credit: String,
     balance: String,
   },
+  development: {
+    debit: String,
+    credit: String,
+    balance: String,
+  },
   user: {
     type: String,
   },
@@ -57,6 +62,7 @@ interface IPaymentRecord {
     loans: any;
     building_fund: any;
     investment_fund: any;
+    development: any;
     user: string;
     certified_by: string;
     createdAt?: Date; 

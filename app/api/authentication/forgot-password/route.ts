@@ -25,7 +25,7 @@ export async function POST(req: Request, res: Response) {
 
     await existingUserWithEmail.save();
 
-    sendResetEmail(data.email, resetToken);
+    await sendResetEmail(data.email, resetToken);  
     return Response.json({
       message: "Reset Instructions sent Successfully",
     });

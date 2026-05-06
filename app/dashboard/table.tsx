@@ -1,80 +1,63 @@
+// IndividualPaymentTable (table.tsx)
+"use client";
 import React from "react";
-import { CiSquarePlus } from "react-icons/ci";
 import { HiOutlineDotsVertical } from "react-icons/hi";
-import { FaChevronDown } from "react-icons/fa6";
 import { IoSearchSharp } from "react-icons/io5";
 import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  Input,
-  Button,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  Chip,
-  User,
-  Pagination,
-  Selection,
-  ChipProps,
-  SortDescriptor,
+  Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
+  Input, Button, DropdownTrigger, Dropdown, DropdownMenu, DropdownItem,
+  Pagination, Selection, SortDescriptor, ChipProps,
 } from "@nextui-org/react";
-
 import { columns, records } from "./data";
-import { capitalize } from "./utils";
 import AddPaymentModal from "../Components/AddPaymentModal";
 import EditPaymentModal from "../Components/EditPaymentModal";
 import DashboardCard from "../Components/DashboardCard";
 import DeletePaymentModal from "../Components/DeletePaymentModal";
 import { useAppSelector } from "@/redux/hooks";
 
-const statusColorMap: Record<string, ChipProps["color"]> = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
-};
+type RecordType = (typeof records)[0];
 
-type User = (typeof records)[0];
+const fmt = (value: any) =>
+  `₦${Number(value)?.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+
+const DrCrBal = ({ cellValue, extra }: { cellValue: any; extra?: React.ReactNode }) => (
+  <div className="flex items-center gap-3">
+    <div>
+      <p className="text-[10px] text-gray-400 font-semibold uppercase">Dr</p>
+      <p className="text-[12px] text-gray-700">{fmt(cellValue?.debit)}</p>
+    </div>
+    <div>
+      <p className="text-[10px] text-gray-400 font-semibold uppercase">Cr</p>
+      <p className="text-[12px] text-gray-700">{fmt(cellValue?.credit)}</p>
+    </div>
+    <div>
+      <p className="text-[10px] text-gray-400 font-semibold uppercase">Bal</p>
+      <p className="text-[12px] font-semibold text-[#3C3489]">{fmt(cellValue?.balance)}</p>
+    </div>
+    {extra}
+  </div>
+);
 
 export default function IndividualPaymentTable({
-  record,
-  isOpen,
-  setIsOpen,
-  setIsDelOpen,
-  isDelOpen,
+  record, isOpen, setIsOpen, setIsDelOpen, isDelOpen,
 }: any) {
   const userData: any = useAppSelector((state) => state.user);
   const userDetail = userData?.user;
+
   const INITIAL_VISIBLE_COLUMNS = [
-    "date",
-    "particulars",
-    "shares",
-    "savings",
-    "loans",
-    "building_fund",
-    "investment_fund",
-    "development",
+    "date", "particulars", "shares", "savings", "loans",
+    "building_fund", "investment_fund", "development",
     userDetail?.role === "member" ? "" : "actions",
   ];
 
   const [filterValue, setFilterValue] = React.useState("");
-  const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
-    new Set([])
-  );
-  const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
-    new Set(INITIAL_VISIBLE_COLUMNS)
-  );
-  const [statusFilter, setStatusFilter] = React.useState<Selection>("all");
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
+  const [visibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
+  const [statusFilter] = React.useState<Selection>("all");
+  const [rowsPerPage, setRowsPerPage] = React.useState(50);
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
-    column: "age",
-    direction: "ascending",
+    column: "age", direction: "ascending",
   });
-
   const [page, setPage] = React.useState(1);
   const [paymentData, setPaymentData] = React.useState<any>();
 
@@ -82,486 +65,196 @@ export default function IndividualPaymentTable({
 
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
-
-    return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid)
-    );
+    return columns.filter((col) => Array.from(visibleColumns).includes(col.uid));
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredUsers = [...record];
-
+    let filtered = [...record];
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((user) => {
-        console.log(user);
-        return user.date.toLowerCase().includes(filterValue.toLowerCase());
-      });
+      filtered = filtered.filter((r) =>
+        r.date.toLowerCase().includes(filterValue.toLowerCase())
+      );
     }
-    // if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
-    //   filteredUsers = filteredUsers.filter((user) =>
-    //     Array.from(statusFilter).includes(user.status),
-    //   );
-    // }
-
-    return filteredUsers;
-  }, [record, filterValue, statusFilter]);
+    return filtered;
+  }, [record, filterValue]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-
-    return filteredItems.slice(start, end);
+    return filteredItems.slice(start, start + rowsPerPage);
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = React.useMemo(() => {
     return [...items].sort((a: any, b: any) => {
-      const first = a[sortDescriptor.column as keyof any] as number;
+      const first  = a[sortDescriptor.column as keyof any] as number;
       const second = b[sortDescriptor.column as keyof any] as number;
       const cmp = first < second ? -1 : first > second ? 1 : 0;
-
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
 
   const renderCell = React.useCallback((user: any, columnKey: React.Key) => {
     const cellValue = user[columnKey as keyof any];
-
     switch (columnKey) {
       case "date":
-        return <p className="text-xs">{cellValue}</p>;
+        return <p className="text-[12px] text-gray-500 whitespace-nowrap">{cellValue}</p>;
       case "particulars":
-        return (
-          <p className="text-xs">
-            ₦
-            {`${Number(user?.amount)?.toLocaleString("en-US", {
-              maximumFractionDigits: 2,
-            })}`}
-          </p>
-        );
-
+        return <p className="text-[12px] font-medium text-gray-700">{fmt(user?.amount)}</p>;
       case "shares":
-        return (
-          <div className="flex  items-center gap-4">
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Dr</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.debit)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Cr</p>
-              <p className="text-xs">
-                {" "}
-                ₦
-                {`${Number(cellValue?.credit)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Bal</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.balance)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-          </div>
-        );
-
+        return <DrCrBal cellValue={cellValue} />;
       case "savings":
-        return (
-          <div className="flex  items-center gap-4">
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Dr</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.debit)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Cr</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.credit)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Bal</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.balance)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-          </div>
-        );
+        return <DrCrBal cellValue={cellValue} />;
+      case "building_fund":
+        return <DrCrBal cellValue={cellValue} />;
+      case "investment_fund":
+        return <DrCrBal cellValue={cellValue} />;
+      case "development":
+        return <DrCrBal cellValue={cellValue} />;
       case "loans":
         return (
-          <div className="flex  items-center gap-4">
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Dr</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.debit)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Cr</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.credit)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Bal</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.balance)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Interest</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.interest)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-          </div>
+          <DrCrBal
+            cellValue={cellValue}
+            extra={
+              <div>
+                <p className="text-[10px] text-gray-400 font-semibold uppercase">Interest</p>
+                <p className="text-[12px] text-red-500">{fmt(cellValue?.interest)}</p>
+              </div>
+            }
+          />
         );
-
-      case "building_fund":
-        return (
-          <div className="flex  items-center gap-4">
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Dr</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.debit)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Cr</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.credit)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Bal</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.balance)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-          </div>
-        );
-      case "investment_fund":
-        return (
-          <div className="flex  items-center gap-4">
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Dr</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.debit)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Cr</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.credit)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Bal</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.balance)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-          </div>
-        );
-
-      case "development":
-        return (
-          <div className="flex  items-center gap-4">
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Dr</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.debit)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Cr</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.credit)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-            <div className="">
-              <p className="text-xs text-gray-400 font-semibold">Bal</p>
-              <p className="text-xs">
-                ₦
-                {`${Number(cellValue?.balance)?.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })}`}
-              </p>
-            </div>
-          </div>
-        );
-
       case "actions":
         return (
-          <div className="relative flex justify-center items-center gap-2">
+          <div className="flex justify-center">
             <Dropdown>
               <DropdownTrigger>
                 <Button isIconOnly size="sm" variant="light">
-                  <HiOutlineDotsVertical className="text-gray-700 font-semibold" />
+                  <HiOutlineDotsVertical className="text-gray-500" />
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                {/* <DropdownItem
-                  onClick={() => {
-                    setIsOpen(true);
-                    setPaymentData(user);
-                  }}
-                >
-                  Edit Payment Record
-                </DropdownItem> */}
                 <DropdownItem
-                  onClick={() => {
-                    setIsDelOpen(true);
-                    setPaymentData(user);
-                  }}
+                  className="text-red-500"
+                  onClick={() => { setIsDelOpen(true); setPaymentData(user); }}
                 >
-                  Delete Payment Record
+                  Delete record
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
         );
-
       default:
-        return cellValue;
+        return <span className="text-[12px] text-gray-600">{cellValue}</span>;
     }
   }, []);
 
-  const onNextPage = React.useCallback(() => {
-    if (page < pages) {
-      setPage(page + 1);
-    }
-  }, [page, pages]);
-
-  const onPreviousPage = React.useCallback(() => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  }, [page]);
-
-  const onRowsPerPageChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setRowsPerPage(Number(e.target.value));
-      setPage(1);
-    },
-    []
-  );
-
-  const onSearchChange = React.useCallback((value?: string) => {
-    if (value) {
-      setFilterValue(value);
-      setPage(1);
-    } else {
-      setFilterValue("");
-    }
-  }, []);
-
-  const onClear = React.useCallback(() => {
-    setFilterValue("");
-    setPage(1);
-  }, []);
-
-  const topContent = React.useMemo(() => {
-    return (
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[44%]"
-            placeholder="Search by date YYYY-MM-DD..."
-            startContent={<IoSearchSharp />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          />
-          {/* <div className="flex gap-3">
-            <Button color="primary" endContent={<CiSquarePlus />}>
-              Add New
-            </Button>
-          </div> */}
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">
-            Total {record.length} Payment Record
-          </span>
-          <label className="flex items-center text-default-400 text-small">
-            Rows per page:
-            <select
-              className="bg-transparent outline-none text-default-400 text-small"
-              onChange={onRowsPerPageChange}
-            >
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="30">30</option>
-            </select>
-          </label>
-        </div>
-      </div>
-    );
-  }, [
-    filterValue,
-    statusFilter,
-    visibleColumns,
-    onSearchChange,
-    onRowsPerPageChange,
-    record.length,
-    hasSearchFilter,
-  ]);
-
-  const bottomContent = React.useMemo(() => {
-    return (
-      <div className="py-2 px-2 flex justify-between items-center">
-        {/* <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
-            ? "All items selected"
-            : `${selectedKeys.size} of ${filteredItems.length} selected`}
-        </span> */}
-        <Pagination
-          isCompact
-          showControls
-          showShadow
-          color="primary"
-          page={page}
-          total={pages}
-          onChange={setPage}
+  const topContent = React.useMemo(() => (
+    <div className="flex flex-col gap-3 mb-2">
+      <div className="flex justify-between items-center gap-3">
+        <Input
+          isClearable
+          className="w-full sm:max-w-[44%]"
+          placeholder="Search by date (YYYY-MM-DD)..."
+          startContent={<IoSearchSharp className="text-gray-400" />}
+          value={filterValue}
+          onClear={() => { setFilterValue(""); setPage(1); }}
+          onValueChange={(v) => { setFilterValue(v || ""); setPage(1); }}
         />
-        <div className="hidden sm:flex w-[30%] justify-end gap-2">
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onPreviousPage}
-          >
-            Previous
-          </Button>
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onNextPage}
-          >
-            Next
-          </Button>
-        </div>
+        <span className="text-[13px] text-gray-400 whitespace-nowrap">
+          {filteredItems.length} record{filteredItems.length !== 1 ? "s" : ""}
+        </span>
       </div>
-    );
-  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+      <div className="flex justify-end">
+        <label className="flex items-center text-[13px] text-gray-400 gap-2">
+          Rows per page:
+          <select
+            className="bg-transparent outline-none text-gray-500 text-[13px]"
+            onChange={(e) => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
+          >
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  ), [filterValue, filteredItems.length]);
+
+  const bottomContent = React.useMemo(() => (
+    <div className="py-3 px-2 flex justify-between items-center border-t border-gray-100 mt-2">
+      <Pagination
+        isCompact showControls showShadow
+        color="primary"
+        page={page}
+        total={pages}
+        onChange={setPage}
+      />
+      <div className="hidden sm:flex gap-2">
+        <Button isDisabled={page === 1} size="sm" variant="flat"
+          onPress={() => setPage((p) => Math.max(1, p - 1))}>
+          Previous
+        </Button>
+        <Button isDisabled={page === pages} size="sm" variant="flat"
+          onPress={() => setPage((p) => Math.min(pages, p + 1))}>
+          Next
+        </Button>
+      </div>
+    </div>
+  ), [page, pages]);
 
   return (
     <>
-      <div className="mt-24 md:mt-0 lg:justify-between mb-4  w-full flex md:gap-4 gap-3 flex-wrap">
-        <DashboardCard data={record} label="shares" />
-        <DashboardCard data={record} label="savings" />
-        <DashboardCard data={record} label="loans" />
-        <DashboardCard data={record} label="building_fund" />
-        <DashboardCard data={record} label="investment_fund" />
-        <DashboardCard data={record} label="development" />
+      {/* Balance cards */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6 mt-20 md:mt-0">
+        {["shares", "savings", "loans", "building_fund", "investment_fund", "development"].map((label) => (
+          <DashboardCard key={label} data={record} label={label} />
+        ))}
       </div>
-      <Table
-        aria-label="KOL Cooperative society"
-        isHeaderSticky
-        bottomContent={bottomContent}
-        bottomContentPlacement="outside"
-        classNames={{
-          wrapper: "max-h-[500px]",
-        }}
-        selectedKeys={selectedKeys}
-        // selectionMode="multiple"
-        sortDescriptor={sortDescriptor}
-        topContent={topContent}
-        topContentPlacement="outside"
-        onSelectionChange={setSelectedKeys}
-        onSortChange={setSortDescriptor}
-      >
-        <TableHeader columns={headerColumns}>
-          {(column) => (
-            <TableColumn
-              key={column.uid}
-              align={column.uid === "actions" ? "center" : "start"}
-              allowsSorting={column.sortable}
-            >
-              {column.name}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody emptyContent={"No Record found"} items={sortedItems}>
-          {(item) => (
-            <TableRow key={item.individual}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      <EditPaymentModal
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        paymentData={paymentData}
-      />
 
-      <DeletePaymentModal
-        isDelOpen={isDelOpen}
-        setIsDelOpen={setIsDelOpen}
-        paymentData={paymentData}
-      />
+      {/* Table */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-[0_2px_12px_rgba(60,52,137,0.06)] p-4">
+        <Table
+          aria-label="KOL Cooperative Society payment records"
+          isHeaderSticky
+          bottomContent={bottomContent}
+          bottomContentPlacement="outside"
+          classNames={{
+            wrapper: "max-h-[500px] shadow-none border border-gray-100 rounded-xl",
+            th: "bg-[#f5f4f9] text-[#3C3489] text-[11px] font-semibold uppercase tracking-wide",
+            td: "py-2.5",
+          }}
+          selectedKeys={selectedKeys}
+          sortDescriptor={sortDescriptor}
+          topContent={topContent}
+          topContentPlacement="outside"
+          onSelectionChange={setSelectedKeys}
+          onSortChange={setSortDescriptor}
+        >
+          <TableHeader columns={headerColumns}>
+            {(column) => (
+              <TableColumn
+                key={column.uid}
+                align={column.uid === "actions" ? "center" : "start"}
+                allowsSorting={column.sortable}
+              >
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody emptyContent={"No records found"} items={sortedItems}>
+            {(item) => (
+              <TableRow key={item.individual} className="hover:bg-[#f5f4f9] transition-colors">
+                {(columnKey) => (
+                  <TableCell>{renderCell(item, columnKey)}</TableCell>
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      <EditPaymentModal isOpen={isOpen} setIsOpen={setIsOpen} paymentData={paymentData} />
+      <DeletePaymentModal isDelOpen={isDelOpen} setIsDelOpen={setIsDelOpen} paymentData={paymentData} />
     </>
   );
 }

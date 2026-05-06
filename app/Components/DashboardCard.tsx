@@ -1,254 +1,68 @@
+// DashboardCard.tsx
 import React from "react";
 
+const formatAmount = (value: number) => {
+  const abs = Math.abs(value);
+  const formatted = abs.toLocaleString("en-US", { maximumFractionDigits: 2 });
+  return value < 0 ? `-₦${formatted}` : `₦${formatted}`;
+};
+
+const cardConfig: Record<string, { label: string; color: string; textColor: string; accent: string }> = {
+  shares:          { label: "Shares",        color: "bg-[#eeedfe]", textColor: "text-[#3C3489]", accent: "bg-[#534AB7]" },
+  savings:         { label: "Savings",        color: "bg-[#e6f1fb]", textColor: "text-[#185FA5]", accent: "bg-[#378ADD]" },
+  loans:           { label: "Loans",          color: "bg-[#fcebeb]", textColor: "text-[#A32D2D]", accent: "bg-[#E24B4A]" },
+  building_fund:   { label: "Building Fund",  color: "bg-[#1a1433]", textColor: "text-white",     accent: "bg-[#534AB7]" },
+  investment_fund: { label: "Investment",     color: "bg-[#eaf3de]", textColor: "text-[#3B6D11]", accent: "bg-[#639922]" },
+  development:     { label: "Development",    color: "bg-[#faeeda]", textColor: "text-[#854F0B]", accent: "bg-[#BA7517]" },
+};
+
 const DashboardCard = ({ data, label }: any) => {
-  const sharesBalance = Number(data[0]?.shares?.balance) || 0;
-  const savingsBalance = Number(data[0]?.savings?.balance) || 0;
-  const loansBalance = Number(data[0]?.loans?.balance) || 0;
-  const loansInterest = Number(data[0]?.loans?.interest) || 0;
-  const buildingBalance = Number(data[0]?.building_fund?.balance) || 0;
-  const investmentBalance = Number(data[0]?.investment_fund?.balance) || 0;
-  const devBalance = Number(data[0]?.development?.balance) || 0;
+  const cfg = cardConfig[label];
+  if (!cfg) return null;
 
-  // let totalSharesDebit = 0;
-  // let totalSharesCredit = 0;
+  const item = data[0];
+  const balance   = Number(item?.[label]?.balance)  || 0;
+  const interest  = label === "loans" ? Number(item?.[label]?.interest) || 0 : null;
 
-  // let totalSavingsDebit = 0;
-  // let totalSavingsCredit = 0;
+  const isLight = label !== "building_fund";
 
-  // let totalLoansDebit = 0;
-  // let totalLoansCredit = 0;
-
-  // let totalBuildingDebit = 0;
-  // let totalBuildingCredit = 0;
-
-  // let totalInvestmentDebit = 0;
-  // let totalInvestmentCredit = 0;
-  // Iterate over each object in the data array
-  // data.forEach((item: any) => {
-  //   // Extract debit and credit values from the "shares" object of each item
-  //   const { debit, credit } = item.shares;
-  //   const { debit: savingsDebit, credit: savingsCredit } = item.savings;
-  //   const { debit: loansDebit, credit: loansCredit } = item.loans;
-  //   const { debit: buildingDebit, credit: buildingCredit } = item.building_fund;
-  //   const { debit: investmentDebit, credit: investmentCredit } =
-  //     item.investment_fund;
-  //   // Convert debit and credit values to numbers and add them to the totals
-  //   totalSharesDebit += parseInt(debit);
-  //   totalSharesCredit += parseInt(credit);
-
-  //   totalSavingsDebit += parseInt(savingsDebit);
-  //   totalSavingsCredit += parseInt(savingsCredit);
-
-  //   totalLoansDebit += parseInt(loansDebit);
-  //   totalLoansCredit += parseInt(loansCredit);
-
-  //   totalBuildingDebit += parseInt(buildingDebit);
-  //   totalBuildingCredit += parseInt(buildingCredit);
-
-  //   totalInvestmentDebit += parseInt(investmentDebit);
-  //   totalInvestmentCredit += parseInt(investmentCredit);
-  // });
   return (
-    <>
-      {label === "shares" && (
-        <div className="lg:w-[30%] w-[47%] bg-purple-300  rounded-md p-3 md:p-4">
-          <h1 className="md:text-2xl font-bold text-xl">Shares</h1>
-          <div className="flex md:items-center justify-between lg:flex-row flex-col">
-            <div className="flex flex-col mt-2">
-              <label htmlFor="" className="text-xs">
-                Balance
-              </label>
+    <div className={`flex-1 min-w-[140px] ${cfg.color} rounded-2xl p-4 border ${
+      label === "building_fund" ? "border-white/10" : "border-black/5"
+    }`}>
 
-              {sharesBalance < 0 ? (
-                <h4 className="font-semibold text-lg">
-                  {" "}
-                  -₦
-                  {`${Number(sharesBalance * -1)?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}`}
-                </h4>
-              ) : (
-                <h4 className="font-semibold text-lg">
-                  {" "}
-                  ₦
-                  {`${Number(sharesBalance)?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}`}
-                </h4>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-      {label === "savings" && (
-        <div className="lg:w-[30%] w-[47%] bg-blue-300  rounded-md p-3 md:p-4">
-          <h1 className="md:text-2xl font-bold text-xl">Savings</h1>
-          <div className="flex md:items-center justify-between lg:flex-row flex-col">
-            <div className="flex flex-col mt-2">
-              <label htmlFor="" className="text-xs">
-                Balance
-              </label>
-              {savingsBalance < 0 ? (
-                <h4 className="font-semibold text-lg">
-                  {" "}
-                  -₦
-                  {`${Number(savingsBalance * -1)?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}`}
-                </h4>
-              ) : (
-                <h4 className="font-semibold text-lg">
-                  {" "}
-                  ₦
-                  {`${Number(savingsBalance)?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}`}
-                </h4>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-      {label === "loans" && (
-        <div className="lg:w-[30%] w-[47%] bg-red-300  rounded-md p-3 md:p-4">
-          <h1 className="md:text-2xl font-bold text-xl">Loans</h1>
-          <div className="flex md:items-center justify-between lg:flex-row flex-col">
-            <div className="flex flex-col mt-2">
-              <label htmlFor="" className="text-xs ">
-                Balance
-              </label>
-              {loansBalance < 0 ? (
-                <h4 className="font-semibold text-lg">
-                  {" "}
-                  -₦
-                  {`${Number(loansBalance * -1)?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}`}
-                </h4>
-              ) : (
-                <h4 className="font-semibold text-lg">
-                  {" "}
-                  ₦
-                  {`${Number(loansBalance)?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}`}
-                </h4>
-              )}
-            </div>
+      {/* Accent dot + label */}
+      <div className="flex items-center gap-2 mb-3">
+        <div className={`w-2 h-2 rounded-full ${cfg.accent}`} />
+        <p className={`text-[12px] font-semibold uppercase tracking-widest ${
+          label === "building_fund" ? "text-white/50" : "text-gray-500"
+        }`}>
+          {cfg.label}
+        </p>
+      </div>
 
-            <div className="flex flex-col mt-2">
-              <label htmlFor="" className="text-xs ">
-                Interest
-              </label>
-              {loansInterest < 0 ? (
-                <h4 className="font-semibold text-lg">
-                  {" "}
-                  -₦
-                  {`${Number(loansInterest * -1)?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}`}
-                </h4>
-              ) : (
-                <h4 className="font-semibold text-lg">
-                  {" "}
-                  ₦
-                  {`${Number(loansInterest)?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}`}
-                </h4>
-              )}
-            </div>
-          </div>
+      {/* Balance */}
+      <div className="mb-1">
+        <p className={`text-[11px] mb-0.5 ${
+          label === "building_fund" ? "text-white/40" : "text-gray-400"
+        }`}>
+          Balance
+        </p>
+        <p className={`text-[20px] font-semibold leading-tight ${cfg.textColor}`}>
+          {formatAmount(balance)}
+        </p>
+      </div>
+
+      {/* Interest (loans only) */}
+      {interest !== null && (
+        <div className="mt-3 pt-3 border-t border-black/10">
+          <p className="text-[11px] text-gray-400 mb-0.5">Interest</p>
+          <p className="text-[15px] font-semibold text-[#A32D2D]">
+            {formatAmount(interest)}
+          </p>
         </div>
       )}
-      {label === "building_fund" && (
-        <div className="lg:w-[30%] w-[47%] bg-black  rounded-md p-3 md:p-4">
-          <h1 className="md:text-2xl font-bold text-xl text-white">Building</h1>
-          <div className="flex md:items-center justify-between lg:flex-row flex-col">
-            <div className="flex flex-col mt-2">
-              <label htmlFor="" className="text-xs  text-white">
-                Balance
-              </label>
-              {buildingBalance < 0 ? (
-                <h4 className="font-semibold text-lg text-white">
-                  {" "}
-                  -₦
-                  {`${Number(buildingBalance * -1)?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}`}
-                </h4>
-              ) : (
-                <h4 className="font-semibold text-lg text-white">
-                  {" "}
-                  ₦
-                  {`${Number(buildingBalance)?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}`}
-                </h4>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-      {label === "investment_fund" && (
-        <div className="w-[97%] lg:w-[30%]  bg-green-300  rounded-md p-3 md:p-4">
-          <h1 className="md:text-2xl font-bold text-xl">Investment</h1>
-          <div className="flex md:items-center justify-between lg:flex-row flex-col">
-            <div className="flex flex-col mt-2">
-              <label htmlFor="" className="text-xs">
-                Balance
-              </label>
-              {investmentBalance < 0 ? (
-                <h4 className="font-semibold text-lg">
-                  {" "}
-                  -₦
-                  {`${Number(investmentBalance * -1)?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}`}
-                </h4>
-              ) : (
-                <h4 className="font-semibold text-lg">
-                  {" "}
-                  ₦
-                  {`${Number(investmentBalance)?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}`}
-                </h4>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-      {label === "development" && (
-        <div className="w-[97%] lg:w-[30%]  bg-green-300  rounded-md p-3 md:p-4">
-          <h1 className="md:text-2xl font-bold text-xl">Development</h1>
-          <div className="flex md:items-center justify-between lg:flex-row flex-col">
-            <div className="flex flex-col mt-2">
-              <label htmlFor="" className="text-xs">
-                Balance
-              </label>
-              {devBalance < 0 ? (
-                <h4 className="font-semibold text-lg">
-                  {" "}
-                  -₦
-                  {`${Number(devBalance * -1)?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}`}
-                </h4>
-              ) : (
-                <h4 className="font-semibold text-lg">
-                  {" "}
-                  ₦
-                  {`${Number(devBalance)?.toLocaleString("en-US", {
-                    maximumFractionDigits: 2,
-                  })}`}
-                </h4>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+    </div>
   );
 };
 
