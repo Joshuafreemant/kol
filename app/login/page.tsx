@@ -1,7 +1,6 @@
 "use client";
-import Head from 'next/head';
+import Head from "next/head";
 import { useState } from "react";
-import { User } from "../register/types";
 import { postFetch } from "../lib/apiCall";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
@@ -9,19 +8,34 @@ import "react-toastify/dist/ReactToastify.css";
 import { useSelector, useDispatch } from "../../redux/store";
 import { setUserss } from "@/redux/slices/userSlice";
 
+type Mode = "email" | "phone";
+
 const Login = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<User>({ email: "", password: "" });
-  const dispatch = useDispatch();
+  const [mode, setMode] = useState<Mode>("email");
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = () => {
+    if (!identifier.trim() || !password) {
+      toast("Please fill in all fields.", { theme: "dark" });
+      return;
+    }
+
     setLoading(true);
-    postFetch("/authentication/login", {
-      email: user.email.toLowerCase(),
-      password: user.password.toLowerCase(),
-    })
+
+    const payload =
+      mode === "email"
+        ? {
+            email: identifier.toLowerCase().trim(),
+            password: password.toLowerCase(),
+          }
+        : { phone_number: identifier.trim(), password: password.toLowerCase() };
+
+    postFetch("/authentication/login", payload)
       .then((response: any) => {
         setLoading(false);
 
@@ -70,7 +84,6 @@ const Login = () => {
 
       <div style={styles.wrap}>
         <div style={styles.card}>
-
           {/* Emblem */}
           <div style={styles.emblem}>
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
@@ -95,21 +108,56 @@ const Login = () => {
           <div style={styles.divider} />
 
           <div style={styles.notice}>
-            For assistance, please call our support line or visit the nearest branch office.
+            You can sign in using either your <strong>email address</strong> or
+            your registered <strong>phone number</strong>.
           </div>
 
-          {/* Email */}
-          <div style={styles.field}>
-            <label htmlFor="email" style={styles.label}>
+          {/* Mode toggle */}
+          <div style={styles.toggle}>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("email");
+                setIdentifier("");
+              }}
+              style={{
+                ...styles.toggleBtn,
+                ...(mode === "email" ? styles.toggleActive : {}),
+              }}
+            >
               Email Address
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("phone");
+                setIdentifier("");
+              }}
+              style={{
+                ...styles.toggleBtn,
+                ...(mode === "phone" ? styles.toggleActive : {}),
+              }}
+            >
+              Phone Number
+            </button>
+          </div>
+
+          {/* Identifier field */}
+          <div style={styles.field}>
+            <label htmlFor="identifier" style={styles.label}>
+              {mode === "email" ? "Email Address" : "Phone Number"}
             </label>
             <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              placeholder="e.g. john.doe@email.com"
-              value={user.email}
-              onChange={(e) => setUser({ ...user, email: e.target.value })}
+              id="identifier"
+              type={mode === "email" ? "email" : "tel"}
+              autoComplete={mode === "email" ? "email" : "tel"}
+              placeholder={
+                mode === "email"
+                  ? "e.g. john.doe@email.com"
+                  : "e.g. 08140375758"
+              }
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               style={styles.input}
               onFocus={(e) => (e.target.style.borderColor = "#534AB7")}
               onBlur={(e) => (e.target.style.borderColor = "#d1d5db")}
@@ -127,8 +175,8 @@ const Login = () => {
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 placeholder="Enter your password"
-                value={user.password}
-                onChange={(e) => setUser({ ...user, password: e.target.value })}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 style={{ ...styles.input, paddingRight: "52px" }}
                 onFocus={(e) => (e.target.style.borderColor = "#534AB7")}
                 onBlur={(e) => (e.target.style.borderColor = "#d1d5db")}
@@ -141,15 +189,31 @@ const Login = () => {
                 title="Toggle password visibility"
               >
                 {showPassword ? (
-                  // Eye-off icon
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
                     <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
                     <line x1="1" y1="1" x2="23" y2="23" />
                   </svg>
                 ) : (
-                  // Eye icon
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                     <circle cx="12" cy="12" r="3" />
                   </svg>
@@ -163,10 +227,7 @@ const Login = () => {
             type="button"
             onClick={handleLogin}
             disabled={loading}
-            style={{
-              ...styles.btn,
-              ...(loading ? styles.btnDisabled : {}),
-            }}
+            style={{ ...styles.btn, ...(loading ? styles.btnDisabled : {}) }}
           >
             {loading ? (
               <span style={styles.btnLoading}>
@@ -191,7 +252,6 @@ const Login = () => {
               Register here
             </a>
           </div>
-
         </div>
       </div>
 
@@ -261,6 +321,29 @@ const styles: Record<string, React.CSSProperties> = {
     color: "#6b7280",
     marginBottom: "1.5rem",
     lineHeight: 1.5,
+  },
+  toggle: {
+    display: "flex",
+    borderRadius: "8px",
+    border: "1px solid #e5e7eb",
+    overflow: "hidden",
+    marginBottom: "1.5rem",
+  },
+  toggleBtn: {
+    flex: 1,
+    padding: "10px",
+    fontSize: "14px",
+    fontWeight: 500,
+    fontFamily: "'Source Sans 3', sans-serif",
+    border: "none",
+    cursor: "pointer",
+    backgroundColor: "#ffffff",
+    color: "#6b7280",
+    transition: "background 0.15s, color 0.15s",
+  },
+  toggleActive: {
+    backgroundColor: "#3C3489",
+    color: "#ffffff",
   },
   field: {
     marginBottom: "1.25rem",
